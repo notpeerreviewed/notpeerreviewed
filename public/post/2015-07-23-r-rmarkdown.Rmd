@@ -1,0 +1,24 @@
+---
+title: "Procrastination - no more!"
+author: "Jeff Lean"
+date: 2018-07-20
+categories: ["R"]
+tags: ["R Markdown"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+# A first post
+
+A few years ago I changed careers to indulge an interest in data science. I've been working in this field for almost 3 years now and, for the most part, I've loved it. I get to play with coding every day, statistics and mathematics fairly often, and I've even had the opportunity to tinker with some Javascript for data visualisation. The best (and worst!) thing about it is that I have a list of things I want to learn that is very long, and it just keeps growing.
+
+Part of my work over the last few years has involved rebuilding a reporting system that takes various MS Excel returns, reads the data, and reformats it to a standard table structure so we can use it to build our own reports and conduct our own analysis.
+
+Due to the nature of the returns I ended up settling on the RDCOMClient package within R to do much of the reading. This package is an interesting beast. One of the things that struck me when I first starting using it was the lack of good examples online. I spent many hours trawling over Stackoverflow to find answers to the most basic things. Over time, I've found the package to be pretty remarkable because it gives you access to just about all the functionality available within the Microsoft Office suite of software.
+
+One of the things I found tricky when I first started learning how to use this package was that you really need a bit of an understanding of VBA as well, since this is the language that is used to write macros in MS Office. 
+
+
+
