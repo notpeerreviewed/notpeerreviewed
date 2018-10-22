@@ -8,11 +8,6 @@
   </url>
   
   <url>
-    <loc>/2018/10/introduction-to-rdcomclient/</loc>
-    <lastmod>2018-10-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/2018/07/testing/</loc>
     <lastmod>2018-07-21T00:00:00+00:00</lastmod>
   </url>
@@ -24,6 +19,12 @@
   
   <url>
     <loc>/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/excel/</loc>
+    <lastmod>2018-10-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -40,7 +41,14 @@
   </url>
   
   <url>
+    <loc>/tags/rdcomclient/</loc>
+    <lastmod>2018-10-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/</loc>
+    <lastmod>2018-10-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

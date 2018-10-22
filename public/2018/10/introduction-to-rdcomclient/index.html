@@ -234,15 +234,33 @@ RDCOMClient is an R package written by Duncan Temple Lang.">
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
               <p>This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I’ve learned, and so I have everything located in a single place for future reference. I don’t claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.</p>
-<p>RDCOMClient is an R package written by Duncan Temple Lang. It allows communication with COM objects like Microsoft suite and web browsers. The package is a bit trickier to use than something like readxl, but it allows much more control over how you interact with the target. For example, when using RDCOMClient with Excel it is possible to do everything from reading a basic csv file, to something like building a crawling script that will traverse a network of linked Excel documents. Pretty neat stuff.</p>
+<p>RDCOMClient is an R package written by Duncan Temple Lang. You can find an excellent introduction to the package here - <a href="http://www.omegahat.net/RDCOMClient/Docs/introduction.html">RDCOMClient</a>. It allows communication with COM objects like the Microsoft office suite and web browsers. The package is a bit trickier to use than something like readxl, but it allows much more control over how you interact with the target. For example, when using RDCOMClient with Excel it is possible to do everything from reading a basic csv file, to something like building a crawling script that will traverse a network of linked Excel documents. Pretty neat stuff.</p>
 <p>The very first thing to do is to install the package.</p>
 <pre class="r"><code>install.packages(&quot;RDCOMClient&quot;, repos = &quot;http://www.omegahat.net/R&quot;)</code></pre>
+<p>You’ll also need a working version of Microsoft Excel, so I’ll just assume that you do.</p>
+<p>First you need to open a connection to the COM object</p>
+<pre class="r"><code>ex &lt;- COMCreate(&quot;Excel.Application&quot;))</code></pre>
+<p>RDCOMClient allows access to the properties and methods of the target application. Now that we have instantiated the object ‘ex’ we have access to all the associated properties and methods of the Excel.Application object. I found the easiest way to identify properties and methods of a particular object is to simply open Excel, navigate to the Developer tab, open the Visual Basic editor, and select the Object Browser. This will open a user interface window that allows you to browse through all the methods and properties of the various Visual Basic operations. The COM interface connects to this component of Excel, which is what allows you to drive Excel through the RDCOMClient package.</p>
+<p>Properties are accessed by using double bracket notation ‘[[]]’. Methods are accessed by using ‘$()’. For example, we now have the object ‘ex’ in our workspace. If you didn’t already have an instance of Excel open, you probably can’t see anything at the moment. This is because the application is not ‘Visible’. We can make the application visible by typing ‘ex[[“Visible”]] &lt;- TRUE’. This is basically telling Excel to set the “Visible” property of the ‘ex’ object to TRUE. If we type ‘ex[[“Visible”]]’ without assigning a value, we get the current value of that property returned.</p>
+<pre class="r"><code>ex[[&quot;Visible&quot;]] &lt;- TRUE</code></pre>
 
               
             </div>
           </div>
           <div id="post-footer" class="post-footer main-content-wrap">
             
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="/tags/rdcomclient/">RDCOMClient</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/excel/">Excel</a>
+
+                  </div>
+                
               
             
             
@@ -260,7 +278,7 @@ RDCOMClient is an R package written by Duncan Temple Lang.">
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/introduction-to-rdcomclient/" data-tooltip="Introduction to RDCOMClient">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/07/testing/" data-tooltip="Testing">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -346,7 +364,7 @@ RDCOMClient is an R package written by Duncan Temple Lang.">
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/introduction-to-rdcomclient/" data-tooltip="Introduction to RDCOMClient">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/07/testing/" data-tooltip="Testing">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -497,23 +515,6 @@ RDCOMClient is an R package written by Duncan Temple Lang.</div>
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="/2018/10/introduction-to-rdcomclient/">
-                <h3 class="media-heading">Introduction to RDCOMClient</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Oct 10, 2018
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
               <a class="link-unstyled" href="/2018/07/testing/">
                 <h3 class="media-heading">Testing</h3>
               </a>
@@ -535,7 +536,7 @@ RDCOMClient is an R package written by Duncan Temple Lang.</div>
          data-message-zero="no post found"
          data-message-one="1 post found"
          data-message-other="{n} posts found">
-         3 posts found
+         2 posts found
       </p>
     </div>
   </div>
