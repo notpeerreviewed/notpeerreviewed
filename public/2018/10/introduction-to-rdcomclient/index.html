@@ -1,5 +1,9 @@
 
 
+  
+    
+  
+
 
   
 
@@ -16,25 +20,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.44 with theme Tranquilpeak 0.4.3-BETA">
-    <title>notpeerreviewed</title>
+    <title>Introduction to RDCOMClient</title>
     <meta name="author" content="Jeff Lean">
     <meta name="keywords" content="">
 
     <link rel="icon" href="/favicon.png">
     
-      <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
-    
 
     
-    <meta name="description" content="This blog is notpeerreviewed">
-    <meta property="og:description" content="This blog is notpeerreviewed">
+    <meta name="description" content="This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I’ve learned, and so I have everything located in a single place for future reference. I don’t claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.
+RDCOMClient is an R package written by Duncan Temple Lang.">
+    <meta property="og:description" content="This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I’ve learned, and so I have everything located in a single place for future reference. I don’t claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.
+RDCOMClient is an R package written by Duncan Temple Lang.">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="notpeerreviewed">
-    <meta property="og:url" content="/">
+    <meta property="og:title" content="Introduction to RDCOMClient">
+    <meta property="og:url" content="/2018/10/introduction-to-rdcomclient/">
     <meta property="og:site_name" content="notpeerreviewed">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="notpeerreviewed">
-    <meta name="twitter:description" content="This blog is notpeerreviewed">
+    <meta name="twitter:description" content="This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I’ve learned, and so I have everything located in a single place for future reference. I don’t claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.
+RDCOMClient is an R package written by Duncan Temple Lang.">
     
     
 
@@ -69,7 +74,7 @@
 
   <body>
     <div id="blog">
-      <header id="header" data-behavior="1">
+      <header id="header" data-behavior="4">
   <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
   <div class="header-title">
     <a class="header-title-link" href="/">notpeerreviewed</a>
@@ -89,7 +94,7 @@
   
 </header>
 
-      <nav id="sidebar" data-behavior="1">
+      <nav id="sidebar" data-behavior="4">
   <div class="sidebar-container">
     
       <div class="sidebar-profile">
@@ -199,35 +204,20 @@
 
       
 
-      <div id="main" data-behavior="1"
+      <div id="main" data-behavior="4"
         class="
                hasCoverMetaIn
                ">
-        <section class="postShorten-group main-content-wrap">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
           
           
-            
+            <div class="post-header main-content-wrap text-left">
   
-    
-      
-        
-      
-    
+    <h1 class="post-title" itemprop="headline">
+      Introduction to RDCOMClient
+    </h1>
   
-
-
   
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/10/introduction-to-rdcomclient/">
-          Introduction to RDCOMClient
-        </a>
-      </h1>
-      
   <div class="postShorten-meta post-meta">
     
       <time itemprop="datePublished" datetime="2018-10-22T00:00:00Z">
@@ -239,123 +229,100 @@
     
   </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I’ve learned, and so I have everything located in a single place for future reference. I don’t claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.
-RDCOMClient is an R package written by Duncan Temple Lang.
-      <p>
-        <a href="/2018/10/introduction-to-rdcomclient/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
+</div>
           
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I’ve learned, and so I have everything located in a single place for future reference. I don’t claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.</p>
+<p>RDCOMClient is an R package written by Duncan Temple Lang. It allows communication with COM objects like Microsoft suite and web browsers. The package is a bit trickier to use than something like readxl, but it allows much more control over how you interact with the target. For example, when using RDCOMClient with Excel it is possible to do everything from reading a basic csv file, to something like building a crawling script that will traverse a network of linked Excel documents. Pretty neat stuff.</p>
+<p>The very first thing to do is to install the package.</p>
+<pre class="r"><code>install.packages(&quot;RDCOMClient&quot;, repos = &quot;http://www.omegahat.net/R&quot;)</code></pre>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
             
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/10/introduction-to-rdcomclient/">
-          Introduction to RDCOMClient
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-10-22T00:00:00Z">
-        
-  October 22, 2018
-
-      </time>
-    
-    
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      
-      <p>
-        <a href="/2018/10/introduction-to-rdcomclient/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
+              
             
-  
-    
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/introduction-to-rdcomclient/" data-tooltip="Introduction to RDCOMClient">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
       
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/introduction-to-rdcomclient/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/introduction-to-rdcomclient/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/introduction-to-rdcomclient/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
         
       
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/07/testing/">
-          Testing
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
         </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-07-21T00:00:00Z">
-        
-  July 21, 2018
-
-      </time>
-    
-    
-  
-  
-    <span>in</span>
-    
-      <a class="category-link" href="/categories/r">R</a>
-    
-  
-
+      </li>
+    </ul>
   </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      A first postA few years ago I changed careers to indulge an interest in data science. I’ve been working in this field for almost 3 years now and, for the most part, I’ve loved it. I get to play with coding every day, statistics and mathematics fairly often, and I’ve even had the opportunity to tinker with some Javascript for data visualisation. The best (and worst!) thing about it is that I have a list of things I want to learn that is very long, and it just keeps growing.
-      <p>
-        <a href="/2018/07/testing/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
 
-          
-          
-
-        </section>
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
     &copy; 2018 Jeff Lean. All Rights Reserved
@@ -363,6 +330,102 @@ RDCOMClient is an R package written by Duncan Temple Lang.
 </footer>
 
       </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/introduction-to-rdcomclient/" data-tooltip="Introduction to RDCOMClient">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/introduction-to-rdcomclient/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/introduction-to-rdcomclient/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/introduction-to-rdcomclient/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F10%2Fintroduction-to-rdcomclient%2F">
+          <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F10%2Fintroduction-to-rdcomclient%2F">
+          <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F10%2Fintroduction-to-rdcomclient%2F">
+          <i class="fa fa-google-plus"></i><span>Share on Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
     
     <div id="about">
@@ -509,8 +572,35 @@ $(document).ready(function() {
 </script>
 
 
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = '\/2018\/10\/introduction-to-rdcomclient\/';
+          
+            this.page.identifier = '\/2018\/10\/introduction-to-rdcomclient\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
 
 
     
   </body>
 </html>
+

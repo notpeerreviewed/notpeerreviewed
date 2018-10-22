@@ -32,7 +32,7 @@ canonifyurls = true
 
 [author]
   name = "Jeff Lean"
-  bio = "Super bio with markdown support **COOL**"
+  bio = "I'm a data analyst working in New Zealand. I mainly use R but I'm also working on D3.js and Python. When I'm not coding I try to get out paragliding as much as the wind allows, which isn't much in Wellington."
   job = "Data Analyst"
   location = "New Zealand"
   # Your Gravatar email. Overwrite `author.picture` everywhere in the blog

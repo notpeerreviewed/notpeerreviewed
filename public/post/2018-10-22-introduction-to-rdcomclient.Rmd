@@ -1,0 +1,18 @@
+---
+title: "Introduction to RDCOMClient"
+author: "Jeff Lean"
+date: '2018-10-22'
+slug: introduction-to-rdcomclient
+tags: []
+categories: []
+---
+
+This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I've learned, and so I have everything located in a single place for future reference. I don't claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.
+
+RDCOMClient is an R package written by Duncan Temple Lang. It allows communication with COM objects like Microsoft suite and web browsers. The package is a bit trickier to use than something like readxl, but it allows much more control over how you interact with the target. For example, when using RDCOMClient with Excel it is possible to do everything from reading a basic csv file, to something like building a crawling script that will traverse a network of linked Excel documents. Pretty neat stuff.
+
+The very first thing to do is to install the package.
+
+```{r, eval=FALSE}
+install.packages("RDCOMClient", repos = "http://www.omegahat.net/R")
+```
