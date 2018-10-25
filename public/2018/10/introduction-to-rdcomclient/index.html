@@ -234,7 +234,7 @@ One Saturday night later and I am up and running with a functional blog. Fast fo
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
               <p>For years I have been saying to myself - “I really should start a blog”. Recently I stumbled across the <a href="https://bookdown.org/yihui/blogdown/">blogdown</a> package and finally decided I had a simple enough tool to help me get started.</p>
-<p>One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I’ve decided that the best topic for me to write about first is the <a href="http://www.omegahat.net/RDCOMClient/Docs/introduction.html">RDCOMClient</a> package.</p>
+<p>One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I’ve decided that the best topic for me to write about first is the RDCOMClient package.</p>
 <p>I’ve been using this package for the last few years in my work. When I was first exposed to it, I’ll admit I was a bit reluctant to use it because I didn’t understand the syntax and I couldn’t find many examples online. It took a while to get used to using it, and I can’t say it was a simple process, but now that I have used it for a while it is one of my favourite packages. It allows you to drive almost every aspect of Excel from within an R script. This makes constructing very detailed outputs possible with complete reproducibility.</p>
 <p>RDCOMClient is written by Duncan Temple Lang. You can find an introduction to the package here - <a href="http://www.omegahat.net/RDCOMClient/Docs/introduction.html">RDCOMClient</a>.</p>
 <p>I started off using RDCOMClient to read some csv documents that had unusual formatting. This rapidly progressed into reading groups of xls documents with variable formatting. I needed to use the Excel Find() function to know what row and column to start on. Being able to target the precise range based on values in the data was very helpful. Eventually I built a script that took a handful of seed documents as inputs and crawled across a network of linked Excel documents to produce a picture of over 500 linked spreadsheets on a network.</p>
@@ -242,12 +242,120 @@ One Saturday night later and I am up and running with a functional blog. Fast fo
 <p>The very first thing to do is to install the package.</p>
 <pre class="r"><code>install.packages(&quot;RDCOMClient&quot;, repos = &quot;http://www.omegahat.net/R&quot;)</code></pre>
 <p>You’ll also need a working version of Microsoft Excel, so I’ll just assume that you do.</p>
-<p>First you need to open a connection to the COM object</p>
+<p>First you need to open a connection to the COM object.</p>
 <pre class="r"><code>library(RDCOMClient)
 ex &lt;- COMCreate(&quot;Excel.Application&quot;)</code></pre>
-<p>So far it doesn’t look like much is happening does it? Well we’ve only just created an instance of Excel. We haven’t actually opened the Excel interface. Excel is actually running now, but we just can’t see it.</p>
+<p>So far it doesn’t look like much is happening does it? Well we’ve only just created an instance of Excel. We haven’t actually opened the Excel interface. Excel is actually running now, but we just can’t see it. We can examine the “Visible” property of “ex” by typing ex[[“Visible”]], This will return the current value of the property.</p>
 <pre class="r"><code>ex[[&quot;Visible&quot;]]</code></pre>
-<pre><code>## [1] FALSE</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>If we want to see the “ex” object then we need to set the “Visible” property to TRUE. To access a property of an object you use the double bracket syntax “[[]]”.</p>
+<pre class="r"><code>ex[[&quot;Visible&quot;]] &lt;- TRUE</code></pre>
+<p>By now I’m sure you’re thinking, big deal. What if I actually want to open a document and read its contents. Ok, let’s do that then! For this example I’m going to use a simple .xlsx file called muppets.xlsx. You can download this file from <a href="https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data">here</a>. Be sure to save it in a location you can easily access through R.</p>
+<p>Let’s go through all the steps needed to open this document.</p>
+<pre class="r"><code># make sure RDCOMClient is loaded
+library(RDCOMClient)
+
+# open an instance of Excel
+ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+
+# access the Workbook object within ex
+Workbook &lt;- ex[[&quot;workbooks&quot;]]
+
+# now we open the muppets workbook using the $Open() method
+# the $Open() method takes the file path as an argument
+# just be sure to set the path to wherever you saved your copy of muppets.xlsx
+current_file &lt;- Workbook$Open(&quot;D:/notpeerreviewed/data/muppets.xlsx&quot;)
+
+# make the workbook visible
+ex[[&quot;Visible&quot;]] &lt;- TRUE</code></pre>
+<p>Now that we’ve got the workbook open we need to tell RDCOMClient what sheet to read from. This can be done by using numerical references, or by passing a string.</p>
+<pre class="r"><code># specify the 1st sheet
+sheet &lt;- current_file$Worksheets(&quot;Sheet1&quot;)
+
+# you can also use
+sheet &lt;- current_file$Worksheets(1)
+
+# now you need to specify the range from which to read
+# we know what the range is so we can pass an explicit range to the sheet object
+range &lt;- sheet$Range(&quot;A1:C4&quot;)
+
+# we now access the data in that range through the [[&quot;Value&quot;]] property
+muppets &lt;- range[[&quot;Value&quot;]]
+
+# the last two steps can be combined like this
+muppets &lt;- sheet$Range(&quot;A1:C4&quot;)[[&quot;Value&quot;]]
+muppets</code></pre>
+<pre><code>## [[1]]
+## [[1]][[1]]
+## [1] &quot;name&quot;
+## 
+## [[1]][[2]]
+## [1] &quot;Beaker&quot;
+## 
+## [[1]][[3]]
+## [1] &quot;Animal&quot;
+## 
+## [[1]][[4]]
+## [1] &quot;Kermit&quot;
+## 
+## 
+## [[2]]
+## [[2]][[1]]
+## [1] &quot;age&quot;
+## 
+## [[2]][[2]]
+## [1] 30
+## 
+## [[2]][[3]]
+## [1] 24
+## 
+## [[2]][[4]]
+## [1] 40
+## 
+## 
+## [[3]]
+## [[3]][[1]]
+## [1] &quot;occupation&quot;
+## 
+## [[3]][[2]]
+## [1] &quot;lab technician&quot;
+## 
+## [[3]][[3]]
+## [1] &quot;drummer&quot;
+## 
+## [[3]][[4]]
+## [1] &quot;event manager&quot;</code></pre>
+<p>Whoa! That’s not a very user friendly output! We have a ‘muppets’ object, but it’s in a list. If you want to get your data into a dataframe you need to manipulate this list object. I’ve seen a few ways of doing this and I’ll run through them here.</p>
+<pre class="r"><code># we need to load a few packages for this
+library(dplyr)
+library(purrr)
+
+# lets change the range so we only get the data and not the headers
+muppets &lt;- sheet$Range(&quot;A2:C4&quot;)[[&quot;Value&quot;]]
+
+# the first, and simplest way I have found to transform your data to a dataframe is to
+# unlist your data, coerce it to a matrix using the correct number of rows and columns
+# and then transform to a dataframe
+df &lt;- as.data.frame(matrix(unlist(muppets),3))
+df</code></pre>
+<pre><code>##       V1 V2             V3
+## 1 Beaker 30 lab technician
+## 2 Animal 24        drummer
+## 3 Kermit 40  event manager</code></pre>
+<pre class="r"><code># this can get a bit messier when you aren&#39;t sure how many rows you have
+
+# another much neater way to transform your data to a dataframe is to use the purrr package
+df &lt;- muppets %&gt;%
+  map_dfc(~ as.data.frame(unlist(.))) %&gt;%
+  setNames(., c(&quot;name&quot;, &quot;age&quot;, &quot;occupation&quot;))
+
+df</code></pre>
+<pre><code>##     name age     occupation
+## 1 Beaker  30 lab technician
+## 2 Animal  24        drummer
+## 3 Kermit  40  event manager</code></pre>
+<p>I love the purrr package! It is one of my most favourite packages and is so incredibly powerful, but there’s already plenty written about that so let’s move on. Let’s unpack this second method a bit further. I’ll assume you’re already familiar with the dplyr package and piping. We initially take the muppets list and pass it to the map_dfc() function. This function is a more modern version of the lapply function but it returns a dataframe object. The ‘dfc’ suffix means it will apply the function to each element in the list of muppets, and then bind them together columnwise. There is another map function called map_dfr() which binds elements together row-wise.</p>
+<p>Anyway, that’s more than enough for this first post. In my next post I’ll get into some more complicated reading where we have data in several sheets, data in unusual ranges, and a few other ways to access ranges.</p>
 
               
             </div>
