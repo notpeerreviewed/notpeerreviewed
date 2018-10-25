@@ -17,8 +17,8 @@
       <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
       
       <guid>/2018/10/introduction-to-rdcomclient/</guid>
-      <description>This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I’ve learned, and so I have everything located in a single place for future reference. I don’t claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.
-RDCOMClient is an R package written by Duncan Temple Lang.</description>
+      <description>For years I have been saying to myself - “I really should start a blog”. Recently I stumbled across the blogdown package and finally decided I had a simple enough tool to help me get started.
+One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I’ve decided that the best topic for me to write about first is the RDCOMClient package.</description>
     </item>
     
   </channel>

@@ -9,9 +9,17 @@ tags:
 categories: []
 ---
 
-This is the first of what will become a series on how to use RDCOMClient. I am writing this blog series so I can share what I've learned, and so I have everything located in a single place for future reference. I don't claim to be an expert, so if I say something that is clearly incorrect then please let me know so I can make corrections.
+For years I have been saying to myself - "I really should start a blog". Recently I stumbled across the [blogdown](https://bookdown.org/yihui/blogdown/) package and finally decided I had a simple enough tool to help me get started.
 
-RDCOMClient is an R package written by Duncan Temple Lang. You can find an excellent introduction to the package here - [RDCOMClient](http://www.omegahat.net/RDCOMClient/Docs/introduction.html). It allows communication with COM objects like the Microsoft office suite and web browsers. The package is a bit trickier to use than something like readxl, but it allows much more control over how you interact with the target. For example, when using RDCOMClient with Excel it is possible to do everything from reading a basic csv file, to something like building a crawling script that will traverse a network of linked Excel documents. Pretty neat stuff.
+One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I've decided that the best topic for me to write about first is the [RDCOMClient](http://www.omegahat.net/RDCOMClient/Docs/introduction.html) package.
+
+I've been using this package for the last few years in my work. When I was first exposed to it, I'll admit I was a bit reluctant to use it because I didn't understand the syntax and I couldn't find many examples online. It took a while to get used to using it, and I can't say it was a simple process, but now that I have used it for a while it is one of my favourite packages. It allows you to drive almost every aspect of Excel from within an R script. This makes constructing very detailed outputs possible with complete reproducibility.
+
+RDCOMClient is written by Duncan Temple Lang. You can find an introduction to the package here - [RDCOMClient](http://www.omegahat.net/RDCOMClient/Docs/introduction.html). 
+
+I started off using RDCOMClient to read some csv documents that had unusual formatting. This rapidly progressed into reading groups of xls documents with variable formatting. I needed to use the Excel Find() function to know what row and column to start on. Being able to target the precise range based on values in the data was very helpful. Eventually I built a script that took a handful of seed documents as inputs and crawled across a network of linked Excel documents to produce a picture of over 500 linked spreadsheets on a network.
+
+This post will be the first in a series of posts about how to use RDCOMClient. I hope to build a repository of examples that anyone can use to learn how to use this brilliant package.
 
 The very first thing to do is to install the package.
 
@@ -21,29 +29,31 @@ install.packages("RDCOMClient", repos = "http://www.omegahat.net/R")
 
 You'll also need a working version of Microsoft Excel, so I'll just assume that you do. 
 
-First you need to open a connection to the COM object
+First you need to open a connection to the COM object.
 
-```{r, eval=FALSE}
-ex <- COMCreate("Excel.Application"))
+```{r, eval=TRUE}
+library(RDCOMClient)
+ex <- COMCreate("Excel.Application")
 ```
 
-RDCOMClient allows access to the properties and methods of the target application. Now that we have instantiated the object 'ex' we have access to all the associated properties and methods of the Excel.Application object. I found the easiest way to identify properties and methods of a particular object is to simply open Excel, navigate to the Developer tab, open the Visual Basic editor, and select the Object Browser. This will open a user interface window that allows you to browse through all the methods and properties of the various Visual Basic operations. The COM interface connects to this component of Excel, which is what allows you to drive Excel through the RDCOMClient package.
+So far it doesn't look like much is happening does it? Well we've only just created an instance of Excel. We haven't actually opened the Excel interface. Excel is actually running now, but we just can't see it. We can examine the "Visible" property of "ex" by typing 
+ex[["Visible"]], This will return the current value of the property.
 
-Properties are accessed by using double bracket notation '[[]]'. Methods are accessed by using '$()'. For example, we now have the object 'ex' in our workspace. If you didn't already have an instance of Excel open, you probably can't see anything at the moment. This is because the application is not 'Visible'. We can make the application visible by typing 'ex[["Visible"]] <- TRUE'. This is basically telling Excel to set the "Visible" property of the 'ex' object to TRUE. If we type 'ex[["Visible"]]' without assigning a value, we get the current value of that property returned.
+```{r, eval=TRUE}
+ex[["Visible"]]
+```
 
 
-```{r, eval=FALSE}
+If we want to see the "ex" object then we need to set the "Visible" property to TRUE. To access a property of an object you use the double bracket syntax "[[]]". 
+
+
+```{r, eval=TRUE}
 ex[["Visible"]] <- TRUE
 ```
 
 
 
-
-
-
-
-
-
+By now I'm sure you're thinking, big deal. What if I actually want to open a document and read its contents.
 
 
 
