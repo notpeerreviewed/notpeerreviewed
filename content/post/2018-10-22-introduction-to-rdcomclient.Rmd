@@ -117,7 +117,9 @@ df <- as.data.frame(matrix(unlist(muppets),3))
 df
 # this can get a bit messier when you aren't sure how many rows you have
 
-# another much neater way to transform your data to a dataframe is to use the purrr package
+# another way to transform your data to a dataframe is to use the purrr package
+# this might look a bit more complicated, but it's neater when you don't know 
+# exactly how many rows of data you have
 df <- muppets %>%
   map_dfc(~ as.data.frame(unlist(.))) %>%
   setNames(., c("name", "age", "occupation"))
@@ -126,11 +128,16 @@ df
 
 ```
 
-I love the purrr package! It is one of my most favourite packages and is so incredibly powerful, but there's already plenty written about that so let's move on. Let's unpack this second method a bit further. I'll assume you're already familiar with the dplyr package and piping. We initially take the muppets list and pass it to the map_dfc() function. This function is a more modern version of the lapply function but it returns a dataframe object. The 'dfc' suffix means it will apply the function to each element in the list of muppets, and then bind them together columnwise. There is another map function called map_dfr() which binds elements together row-wise.
+I love the [purrr](https://purrr.tidyverse.org/) package! It is one of my most favourite packages and is so incredibly powerful, but there's already plenty written about that so let's move on. Let's unpack this second method a bit further. I'll assume you're already familiar with the dplyr package and piping. We initially take the muppets list and pass it to the map_dfc() function. This function is similar to the lapply function but it's a bit more modern and returns a dataframe object. The 'dfc' suffix means it will apply the function to each element in the list of muppets, and then bind them together columnwise. There is another map function called map_dfr() which binds elements together row-wise.
 
 Anyway, that's more than enough for this first post. In my next post I'll get into some more complicated reading where we have data in several sheets, data in unusual ranges, and a few other ways to access ranges.
 
 
+Session info for this post.
+```{r, eval=TRUE, message=FALSE}
+print(sessionInfo(), locale = FALSE)
+
+```
 
 
 

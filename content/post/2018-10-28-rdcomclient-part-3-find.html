@@ -1,0 +1,132 @@
+---
+title: RDCOMClient Part 3 - Find()
+author: Jeff Lean
+date: '2018-10-28'
+slug: rdcomclient-part-3-find
+categories:
+  - RDCOMClient
+  - Excel
+  - Find()
+tags:
+  - Excel
+  - RDCOMClient
+  - reading data
+---
+
+
+
+<p>In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.</p>
+<p>If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let’s get our workspace up to the necessary point for this exercise.</p>
+<pre class="r"><code>library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+ex[[&quot;Visible&quot;]] &lt;- TRUE
+
+# access the Workbook object within ex
+Workbook &lt;- ex[[&quot;workbooks&quot;]]
+
+# open workbook
+current_file &lt;- Workbook$Open(&quot;D:/notpeerreviewed/data/oil.xlsx&quot;)
+
+# specify the 1st sheet
+sheet &lt;- current_file$Worksheets(&quot;Supply&quot;)</code></pre>
+<p>Ok, now we’ve got Excel running, the oil.xlsx document is open, and we’ve specified the ‘Supply’ sheet as the sheet we’re looking at. The Find() method is very handy as it allows you to tell Excel to look for the first instance of a value in a given range. The Find() method returns a Range() object, which we can then query to get the address. Suppose we’ve got a long term survey and we know there is a cell in the header that contains the string “Fuel Type”. We can get the address of that cell like this…</p>
+<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Address()</code></pre>
+<pre><code>## [1] &quot;$A$6&quot;</code></pre>
+<p>Now that we know how to find a particular cell, we can use this to specify a range object. Say we want to read the range that includes all columns from the Fuel Type column to the Notes column, and down to the Totals row. First we need to be able to identify the row and column indexes. We can do that with the Row() and Column() methods. Let’s find the column and row of the cell containing the string “Fuel Type”.</p>
+<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row() </code></pre>
+<pre><code>## [1] 6</code></pre>
+<p>Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.</p>
+<pre class="r"><code>c1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()      ## first col
+c2 &lt;- sheet$UsedRange()$Find(&quot;Notes&quot;)$Column()          ## last col
+
+r1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row()         ## first row
+r2 &lt;- sheet$UsedRange()$Find(&quot;Totals&quot;)$Row()            ## last row
+
+
+# create the range object using the cells we found above
+range &lt;- sheet$Range(sheet$Cells(r1+1,c1),sheet$Cells(r2,c2))
+
+# get data
+df &lt;- range[[&#39;Value&#39;]] %&gt;%
+  map(function(x) {ifelse(x == &quot;NULL&quot;, NA, x)}) %&gt;%
+  map_dfc(~ as.data.frame(unlist(.), stringsAsFactors = FALSE))
+
+head(df)</code></pre>
+<pre><code>##                    unlist(.) unlist(.)1 unlist(.)2 unlist(.)3 unlist(.)4
+## 1             Premium Petrol    391.726   9457.211  13206.803   6377.691
+## 2             Regular Petrol  13332.860   38373.96  28472.584  16734.403
+## 3          Automotive Diesel  99497.579  47814.021  21607.902   8320.415
+## 4             Light Fuel Oil  16272.644          0   6007.899          0
+## 5   Heavy (residue) Fuel Oil -33022.470          0   2119.214          0
+## 6 Jet-A1 / Avtur / Av. kero.  13979.257          0  34208.210          0
+##   unlist(.)5 unlist(.)6 unlist(.)7 unlist(.)8 unlist(.)9 unlist(.)10
+## 1          0    -57.529         NA         NA         NA    6192.815
+## 2          0     92.609         NA         NA         NA   49620.464
+## 3          0     25.402     96.676         NA         NA   72716.520
+## 4          0         NA         NA         NA         NA    4882.538
+## 5          0         NA   3499.964         NA         NA          NA
+## 6          0         NA  23207.180         NA         NA   15299.322
+##   unlist(.)11 unlist(.)12 unlist(.)13 unlist(.)14 unlist(.)15 unlist(.)16
+## 1           0      69.000          NA    10358.34           0          NA
+## 2           0      -4.000          NA    13921.15           0          NA
+## 3           0     -34.000          NA    87846.03           0          NA
+## 4           0      67.840          NA    17330.17           0          NA
+## 5           0     -24.391          NA   -34378.83           0          NA
+## 6           0      14.515          NA     9666.45           0          NA</code></pre>
+<p>We could get really creative and read in the header data as well, but in this case there are a few cells that are merged, so this wouldn’t work here without unmerging those cells first. In this case it would be simpler to specify the column names explicitly.</p>
+<pre class="r"><code>header &lt;- c(&quot;fuel&quot;, &quot;openingStock&quot;, &quot;imports&quot;, &quot;refineryDeliveries&quot;, &quot;sales&quot;, &quot;purchases&quot;,
+            &quot;reblending&quot;, &quot;internationalTransport&quot;, &quot;elecGen&quot;, &quot;rerefining&quot;, &quot;otherSales&quot;,
+            &quot;exports&quot;, &quot;losses&quot;, &quot;ownUse&quot;, &quot;closingStock&quot;, &quot;errorCheck&quot;, &quot;notes&quot;)
+
+colnames(df) &lt;- header
+
+head(df)</code></pre>
+<pre><code>##                         fuel openingStock   imports refineryDeliveries
+## 1             Premium Petrol      391.726  9457.211          13206.803
+## 2             Regular Petrol    13332.860  38373.96          28472.584
+## 3          Automotive Diesel    99497.579 47814.021          21607.902
+## 4             Light Fuel Oil    16272.644         0           6007.899
+## 5   Heavy (residue) Fuel Oil   -33022.470         0           2119.214
+## 6 Jet-A1 / Avtur / Av. kero.    13979.257         0          34208.210
+##       sales purchases reblending internationalTransport elecGen rerefining
+## 1  6377.691         0    -57.529                     NA      NA         NA
+## 2 16734.403         0     92.609                     NA      NA         NA
+## 3  8320.415         0     25.402                 96.676      NA         NA
+## 4         0         0         NA                     NA      NA         NA
+## 5         0         0         NA               3499.964      NA         NA
+## 6         0         0         NA              23207.180      NA         NA
+##   otherSales exports  losses ownUse closingStock errorCheck notes
+## 1   6192.815       0  69.000     NA     10358.34          0    NA
+## 2  49620.464       0  -4.000     NA     13921.15          0    NA
+## 3  72716.520       0 -34.000     NA     87846.03          0    NA
+## 4   4882.538       0  67.840     NA     17330.17          0    NA
+## 5         NA       0 -24.391     NA    -34378.83          0    NA
+## 6  15299.322       0  14.515     NA      9666.45          0    NA</code></pre>
+<p>Now you can specify a particular range of cells to be read based on finding a value in a particular cell. This is still nothing too spectacular, and certainly nothing that can’t be done using another Excel reader like readxl combined with some judicious cleaning. In my next post I’ll cover writing data to a document and formatting that data.</p>
+<p>Session info for this post.</p>
+<pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
+<pre><code>## R version 3.5.0 (2018-04-23)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17134)
+## 
+## Matrix products: default
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] purrr_0.2.5        dplyr_0.7.5        RDCOMClient_0.93-0
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.12.17     knitr_1.20       bindr_0.1.1      magrittr_1.5    
+##  [5] tidyselect_0.2.4 R6_2.2.2         rlang_0.2.1      stringr_1.3.1   
+##  [9] tools_3.5.0      xfun_0.3         htmltools_0.3.6  yaml_2.1.19     
+## [13] rprojroot_1.3-2  digest_0.6.15    assertthat_0.2.0 tibble_1.4.2    
+## [17] bookdown_0.7     bindrcpp_0.2.2   glue_1.2.0       evaluate_0.10.1 
+## [21] rmarkdown_1.10   blogdown_0.8.1   stringi_1.1.7    compiler_3.5.0  
+## [25] pillar_1.2.3     backports_1.1.2  pkgconfig_2.0.1</code></pre>

@@ -1,0 +1,124 @@
+---
+title: RDCOMClient Part 2 - UsedRange()
+author: Jeff Lean
+date: '2018-10-27'
+slug: rdcomclient-part-2
+categories:
+  - RDCOMClient
+  - Excel
+tags:
+  - RDCOMClient
+  - Excel
+  - reading data
+---
+
+
+
+<p>In my last post I covered how to open Excel and read some basic data. In this post I’m going to look at the UsedRange method.</p>
+<p>Firstly, I want to go through how to find these methods. The <a href="http://www.omegahat.net/RDCOMClient/Docs/introduction.html">RDCOMClient</a> package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.</p>
+<p>First we’ll open the document we’re going to use for this example and specify the ‘Supply’ sheet for reading.</p>
+<pre class="r"><code>library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+ex[[&quot;Visible&quot;]] &lt;- TRUE
+
+# access the Workbook object within ex
+Workbook &lt;- ex[[&quot;workbooks&quot;]]
+
+# open workbook
+current_file &lt;- Workbook$Open(&quot;D:/notpeerreviewed/data/oil.xlsx&quot;)
+
+# specify the 1st sheet
+sheet &lt;- current_file$Worksheets(&quot;Supply&quot;)</code></pre>
+<p>Now that we’ve got our document open we can start looking at the data. The UsedRange property is important because when we are reading the data from a document we need to be able to access the Value property. If we don’t know exactly what range our data is in, we can use the UsedRange property to tell Excel to look at the sheet we have chosen and create a range object that starts at the top left and includes all rows and all columns that include data.</p>
+<p>This is a good time to highlight one of the peculiarities of RDCOMClient. This is most likely due to my lack of understanding of how it actually exploits the COM, but the documentation says that methods are accessed by using the ‘$’ notation and properties are accessed using the ‘[[]]’ notation. However, I’ve found that sometimes you can access properties using the method notation. I have no idea why this works, but it does. When you are starting out it is generally a bit of a guessing game. Eventually you’ll get a feel for what works and what doesn’t. This is largely why I am writing this series of posts - to minimise the amount of time people need to get up and running with this package.</p>
+<pre class="r"><code># the following two statements are identical
+sheet[[&#39;UsedRange&#39;]]$Address()</code></pre>
+<pre><code>## [1] &quot;$A$1:$Q$26&quot;</code></pre>
+<pre class="r"><code>sheet$UsedRange()[[&#39;Address&#39;]]</code></pre>
+<pre><code>## [1] &quot;$A$1:$Q$26&quot;</code></pre>
+<pre class="r"><code># assigning intermediate methods to a variable
+used_range &lt;- sheet$UsedRange()
+used_range[[&#39;Address&#39;]]</code></pre>
+<pre><code>## [1] &quot;$A$1:$Q$26&quot;</code></pre>
+<pre class="r"><code>used_range$Address()</code></pre>
+<pre><code>## [1] &quot;$A$1:$Q$26&quot;</code></pre>
+<p>You can easily chain methods together, but I’ve found that if you try to chain properties together you’ll get anything from an explicit error, to an unexpected result. Ultimately, I don’t recommend chaining properties together, but a bit of trial and error will help work out the best approach. Anyway, getting back to the UsedRange approach…</p>
+<p>Since the Value property expects a range object, we can use the UsedRange method to pass a range object to the Value property like so.</p>
+<pre class="r"><code># specify range
+used_range &lt;- sheet$UsedRange()
+
+# get data
+df &lt;- used_range[[&#39;Value&#39;]] %&gt;%
+  map(function(x) {ifelse(x == &quot;NULL&quot;, NA, x)}) %&gt;%
+  map_dfc(~ as.data.frame(unlist(.), stringsAsFactors = FALSE))
+
+head(df)</code></pre>
+<pre><code>##                 unlist(.)    unlist(.)1 unlist(.)2
+## 1                    &lt;NA&gt;          &lt;NA&gt;       &lt;NA&gt;
+## 2                    &lt;NA&gt;          &lt;NA&gt;       &lt;NA&gt;
+## 3                    &lt;NA&gt;          &lt;NA&gt;       &lt;NA&gt;
+## 4 Data Unit in Kilolitres          &lt;NA&gt;       &lt;NA&gt;
+## 5                    &lt;NA&gt; Opening Stock   Receipts
+## 6               Fuel Type          &lt;NA&gt;    Imports
+##                                      unlist(.)3   unlist(.)4 unlist(.)5
+## 1                                          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;
+## 2                                          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;
+## 3                                          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;
+## 4                                          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;
+## 5                                          &lt;NA&gt; Intercompany       &lt;NA&gt;
+## 6 Refinery Deliveries, Manufacturers and Others        Sales  Purchases
+##          unlist(.)6              unlist(.)7             unlist(.)8
+## 1                                      &lt;NA&gt;                   &lt;NA&gt;
+## 2                                      &lt;NA&gt;                   &lt;NA&gt;
+## 3                                      &lt;NA&gt;                   &lt;NA&gt;
+## 4                                      &lt;NA&gt;                   &lt;NA&gt;
+## 5 Blends &amp; Rebrands                  Supply                   &lt;NA&gt;
+## 6              &lt;NA&gt; International Transport Electricity Generation
+##                   unlist(.)9          unlist(.)10 unlist(.)11
+## 1                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 2                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 3                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 4                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 5                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 6 Products for \nre-refining Other National Sales     Exports
+##                                     unlist(.)12 unlist(.)13   unlist(.)14
+## 1                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+## 2                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+## 3                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+## 4                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+## 5 Distribution Losses or Accounting Differences     Own Use Closing Stock
+## 6                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+##   unlist(.)15 unlist(.)16
+## 1        &lt;NA&gt;        &lt;NA&gt;
+## 2        &lt;NA&gt;        &lt;NA&gt;
+## 3        &lt;NA&gt;        &lt;NA&gt;
+## 4        &lt;NA&gt;        &lt;NA&gt;
+## 5 Error Check       Notes
+## 6        &lt;NA&gt;        &lt;NA&gt;</code></pre>
+<p>You’ll notice the map() function in the middle of the code snippet above. One of the tricky things about RDCOMClient is that if there is a NULL value in a cell, that cell is read as a NULL value, which means that it is effectively skipped. The function <code>ifelse(x == &quot;NULL&quot;, NA, x)</code> just means that if a NULL value is encountered, it is read as an NA value instead. This way we keep the necessary dimensions from the data to be able to create a rectangular dataframe.</p>
+<p>Now we have a neat dataframe built from the range in the document, but it’s still full of NA values and needs a lot of cleaning before we can actually use it in any analysis. In the next post I’ll look at how we can use the Find() method to further restrict the range we are reading based on specific values within the sheet.</p>
+<p>Session info for this post.</p>
+<pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
+<pre><code>## R version 3.5.0 (2018-04-23)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17134)
+## 
+## Matrix products: default
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] purrr_0.2.5        dplyr_0.7.5        RDCOMClient_0.93-0
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.12.17     knitr_1.20       bindr_0.1.1      magrittr_1.5    
+##  [5] tidyselect_0.2.4 R6_2.2.2         rlang_0.2.1      stringr_1.3.1   
+##  [9] tools_3.5.0      xfun_0.3         htmltools_0.3.6  yaml_2.1.19     
+## [13] rprojroot_1.3-2  digest_0.6.15    assertthat_0.2.0 tibble_1.4.2    
+## [17] bookdown_0.7     bindrcpp_0.2.2   glue_1.2.0       evaluate_0.10.1 
+## [21] rmarkdown_1.10   blogdown_0.8.1   stringi_1.1.7    compiler_3.5.0  
+## [25] pillar_1.2.3     backports_1.1.2  pkgconfig_2.0.1</code></pre>

@@ -6,10 +6,30 @@
     <description>Recent content in Rdcomclient on notpeerreviewed</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 22 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 28 Oct 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/rdcomclient/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>RDCOMClient Part 3 - Find()</title>
+      <link>/2018/10/rdcomclient-part-3-find/</link>
+      <pubDate>Sun, 28 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/rdcomclient-part-3-find/</guid>
+      <description>In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
+If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.</description>
+    </item>
+    
+    <item>
+      <title>RDCOMClient Part 2 - UsedRange()</title>
+      <link>/2018/10/rdcomclient-part-2/</link>
+      <pubDate>Sat, 27 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/rdcomclient-part-2/</guid>
+      <description>In my last post I covered how to open Excel and read some basic data. In this post I’m going to look at the UsedRange method.
+Firstly, I want to go through how to find these methods. The RDCOMClient package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.</description>
+    </item>
     
     <item>
       <title>Introduction to RDCOMClient</title>

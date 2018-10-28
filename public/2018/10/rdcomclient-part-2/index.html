@@ -20,7 +20,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.44 with theme Tranquilpeak 0.4.3-BETA">
-    <title>Introduction to RDCOMClient</title>
+    <title>RDCOMClient Part 2 - UsedRange()</title>
     <meta name="author" content="Jeff Lean">
     <meta name="keywords" content="">
 
@@ -28,18 +28,18 @@
     
 
     
-    <meta name="description" content="For years I have been saying to myself - “I really should start a blog”. Recently I stumbled across the blogdown package and finally decided I had a simple enough tool to help me get started.
-One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I’ve decided that the best topic for me to write about first is the RDCOMClient package.">
-    <meta property="og:description" content="For years I have been saying to myself - “I really should start a blog”. Recently I stumbled across the blogdown package and finally decided I had a simple enough tool to help me get started.
-One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I’ve decided that the best topic for me to write about first is the RDCOMClient package.">
+    <meta name="description" content="In my last post I covered how to open Excel and read some basic data. In this post I’m going to look at the UsedRange method.
+Firstly, I want to go through how to find these methods. The RDCOMClient package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.">
+    <meta property="og:description" content="In my last post I covered how to open Excel and read some basic data. In this post I’m going to look at the UsedRange method.
+Firstly, I want to go through how to find these methods. The RDCOMClient package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="Introduction to RDCOMClient">
-    <meta property="og:url" content="/2018/10/introduction-to-rdcomclient/">
+    <meta property="og:title" content="RDCOMClient Part 2 - UsedRange()">
+    <meta property="og:url" content="/2018/10/rdcomclient-part-2/">
     <meta property="og:site_name" content="notpeerreviewed">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="notpeerreviewed">
-    <meta name="twitter:description" content="For years I have been saying to myself - “I really should start a blog”. Recently I stumbled across the blogdown package and finally decided I had a simple enough tool to help me get started.
-One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I’ve decided that the best topic for me to write about first is the RDCOMClient package.">
+    <meta name="twitter:description" content="In my last post I covered how to open Excel and read some basic data. In this post I’m going to look at the UsedRange method.
+Firstly, I want to go through how to find these methods. The RDCOMClient package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.">
     
     
 
@@ -224,150 +224,121 @@ One Saturday night later and I am up and running with a functional blog. Fast fo
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      Introduction to RDCOMClient
+      RDCOMClient Part 2 - UsedRange()
     </h1>
   
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2018-10-22T00:00:00Z">
+      <time itemprop="datePublished" datetime="2018-10-27T00:00:00Z">
         
-  October 22, 2018
+  October 27, 2018
 
       </time>
     
     
+  
+  
+    <span>in</span>
+    
+      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>, 
+    
+      <a class="category-link" href="/categories/excel">Excel</a>
+    
+  
+
   </div>
 
 </div>
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>For years I have been saying to myself - “I really should start a blog”. Recently I stumbled across the <a href="https://bookdown.org/yihui/blogdown/">blogdown</a> package and finally decided I had a simple enough tool to help me get started.</p>
-<p>One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I’ve decided that the best topic for me to write about first is the RDCOMClient package.</p>
-<p>I’ve been using this package for the last few years in my work. When I was first exposed to it, I’ll admit I was a bit reluctant to use it because I didn’t understand the syntax and I couldn’t find many examples online. It took a while to get used to using it, and I can’t say it was a simple process, but now that I have used it for a while it is one of my favourite packages. It allows you to drive almost every aspect of Excel from within an R script. This makes constructing very detailed outputs possible with complete reproducibility.</p>
-<p>RDCOMClient is written by Duncan Temple Lang. You can find an introduction to the package here - <a href="http://www.omegahat.net/RDCOMClient/Docs/introduction.html">RDCOMClient</a>.</p>
-<p>I started off using RDCOMClient to read some csv documents that had unusual formatting. This rapidly progressed into reading groups of xls documents with variable formatting. I needed to use the Excel Find() function to know what row and column to start on. Being able to target the precise range based on values in the data was very helpful. Eventually I built a script that took a handful of seed documents as inputs and crawled across a network of linked Excel documents to produce a picture of over 500 linked spreadsheets on a network.</p>
-<p>This post will be the first in a series of posts about how to use RDCOMClient. I hope to build a repository of examples that anyone can use to learn how to use this brilliant package.</p>
-<p>The very first thing to do is to install the package.</p>
-<pre class="r"><code>install.packages(&quot;RDCOMClient&quot;, repos = &quot;http://www.omegahat.net/R&quot;)</code></pre>
-<p>You’ll also need a working version of Microsoft Excel, so I’ll just assume that you do.</p>
-<p>First you need to open a connection to the COM object.</p>
+              <p>In my last post I covered how to open Excel and read some basic data. In this post I’m going to look at the UsedRange method.</p>
+<p>Firstly, I want to go through how to find these methods. The <a href="http://www.omegahat.net/RDCOMClient/Docs/introduction.html">RDCOMClient</a> package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.</p>
+<p>First we’ll open the document we’re going to use for this example and specify the ‘Supply’ sheet for reading.</p>
 <pre class="r"><code>library(RDCOMClient)
-ex &lt;- COMCreate(&quot;Excel.Application&quot;)</code></pre>
-<p>So far it doesn’t look like much is happening does it? Well we’ve only just created an instance of Excel. We haven’t actually opened the Excel interface. Excel is actually running now, but we just can’t see it. We can examine the “Visible” property of “ex” by typing ex[[“Visible”]], This will return the current value of the property.</p>
-<pre class="r"><code>ex[[&quot;Visible&quot;]]</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<p>If we want to see the “ex” object then we need to set the “Visible” property to TRUE. To access a property of an object you use the double bracket syntax “[[]]”.</p>
-<pre class="r"><code>ex[[&quot;Visible&quot;]] &lt;- TRUE</code></pre>
-<p>By now I’m sure you’re thinking, big deal. What if I actually want to open a document and read its contents. Ok, let’s do that then! For this example I’m going to use a simple .xlsx file called muppets.xlsx. You can download this file from <a href="https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data">here</a>. Be sure to save it in a location you can easily access through R.</p>
-<p>Let’s go through all the steps needed to open this document.</p>
-<pre class="r"><code># make sure RDCOMClient is loaded
-library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
 
-# open an instance of Excel
 ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+ex[[&quot;Visible&quot;]] &lt;- TRUE
 
 # access the Workbook object within ex
 Workbook &lt;- ex[[&quot;workbooks&quot;]]
 
-# now we open the muppets workbook using the $Open() method
-# the $Open() method takes the file path as an argument
-# just be sure to set the path to wherever you saved your copy of muppets.xlsx
-current_file &lt;- Workbook$Open(&quot;D:/notpeerreviewed/data/muppets.xlsx&quot;)
+# open workbook
+current_file &lt;- Workbook$Open(&quot;D:/notpeerreviewed/data/oil.xlsx&quot;)
 
-# make the workbook visible
-ex[[&quot;Visible&quot;]] &lt;- TRUE</code></pre>
-<p>Now that we’ve got the workbook open we need to tell RDCOMClient what sheet to read from. This can be done by using numerical references, or by passing a string.</p>
-<pre class="r"><code># specify the 1st sheet
-sheet &lt;- current_file$Worksheets(&quot;Sheet1&quot;)
+# specify the 1st sheet
+sheet &lt;- current_file$Worksheets(&quot;Supply&quot;)</code></pre>
+<p>Now that we’ve got our document open we can start looking at the data. The UsedRange property is important because when we are reading the data from a document we need to be able to access the Value property. If we don’t know exactly what range our data is in, we can use the UsedRange property to tell Excel to look at the sheet we have chosen and create a range object that starts at the top left and includes all rows and all columns that include data.</p>
+<p>This is a good time to highlight one of the peculiarities of RDCOMClient. This is most likely due to my lack of understanding of how it actually exploits the COM, but the documentation says that methods are accessed by using the ‘$’ notation and properties are accessed using the ‘[[]]’ notation. However, I’ve found that sometimes you can access properties using the method notation. I have no idea why this works, but it does. When you are starting out it is generally a bit of a guessing game. Eventually you’ll get a feel for what works and what doesn’t. This is largely why I am writing this series of posts - to minimise the amount of time people need to get up and running with this package.</p>
+<pre class="r"><code># the following two statements are identical
+sheet[[&#39;UsedRange&#39;]]$Address()</code></pre>
+<pre><code>## [1] &quot;$A$1:$Q$26&quot;</code></pre>
+<pre class="r"><code>sheet$UsedRange()[[&#39;Address&#39;]]</code></pre>
+<pre><code>## [1] &quot;$A$1:$Q$26&quot;</code></pre>
+<pre class="r"><code># assigning intermediate methods to a variable
+used_range &lt;- sheet$UsedRange()
+used_range[[&#39;Address&#39;]]</code></pre>
+<pre><code>## [1] &quot;$A$1:$Q$26&quot;</code></pre>
+<pre class="r"><code>used_range$Address()</code></pre>
+<pre><code>## [1] &quot;$A$1:$Q$26&quot;</code></pre>
+<p>You can easily chain methods together, but I’ve found that if you try to chain properties together you’ll get anything from an explicit error, to an unexpected result. Ultimately, I don’t recommend chaining properties together, but a bit of trial and error will help work out the best approach. Anyway, getting back to the UsedRange approach…</p>
+<p>Since the Value property expects a range object, we can use the UsedRange method to pass a range object to the Value property like so.</p>
+<pre class="r"><code># specify range
+used_range &lt;- sheet$UsedRange()
 
-# you can also use
-sheet &lt;- current_file$Worksheets(1)
+# get data
+df &lt;- used_range[[&#39;Value&#39;]] %&gt;%
+  map(function(x) {ifelse(x == &quot;NULL&quot;, NA, x)}) %&gt;%
+  map_dfc(~ as.data.frame(unlist(.), stringsAsFactors = FALSE))
 
-# now you need to specify the range from which to read
-# we know what the range is so we can pass an explicit range to the sheet object
-range &lt;- sheet$Range(&quot;A1:C4&quot;)
-
-# we now access the data in that range through the [[&quot;Value&quot;]] property
-muppets &lt;- range[[&quot;Value&quot;]]
-
-# the last two steps can be combined like this
-muppets &lt;- sheet$Range(&quot;A1:C4&quot;)[[&quot;Value&quot;]]
-muppets</code></pre>
-<pre><code>## [[1]]
-## [[1]][[1]]
-## [1] &quot;name&quot;
-## 
-## [[1]][[2]]
-## [1] &quot;Beaker&quot;
-## 
-## [[1]][[3]]
-## [1] &quot;Animal&quot;
-## 
-## [[1]][[4]]
-## [1] &quot;Kermit&quot;
-## 
-## 
-## [[2]]
-## [[2]][[1]]
-## [1] &quot;age&quot;
-## 
-## [[2]][[2]]
-## [1] 30
-## 
-## [[2]][[3]]
-## [1] 24
-## 
-## [[2]][[4]]
-## [1] 40
-## 
-## 
-## [[3]]
-## [[3]][[1]]
-## [1] &quot;occupation&quot;
-## 
-## [[3]][[2]]
-## [1] &quot;lab technician&quot;
-## 
-## [[3]][[3]]
-## [1] &quot;drummer&quot;
-## 
-## [[3]][[4]]
-## [1] &quot;event manager&quot;</code></pre>
-<p>Whoa! That’s not a very user friendly output! We have a ‘muppets’ object, but it’s in a list. If you want to get your data into a dataframe you need to manipulate this list object. I’ve seen a few ways of doing this and I’ll run through them here.</p>
-<pre class="r"><code># we need to load a few packages for this
-library(dplyr)
-library(purrr)
-
-# lets change the range so we only get the data and not the headers
-muppets &lt;- sheet$Range(&quot;A2:C4&quot;)[[&quot;Value&quot;]]
-
-# the first, and simplest way I have found to transform your data to a dataframe is to
-# unlist your data, coerce it to a matrix using the correct number of rows and columns
-# and then transform to a dataframe
-df &lt;- as.data.frame(matrix(unlist(muppets),3))
-df</code></pre>
-<pre><code>##       V1 V2             V3
-## 1 Beaker 30 lab technician
-## 2 Animal 24        drummer
-## 3 Kermit 40  event manager</code></pre>
-<pre class="r"><code># this can get a bit messier when you aren&#39;t sure how many rows you have
-
-# another way to transform your data to a dataframe is to use the purrr package
-# this might look a bit more complicated, but it&#39;s neater when you don&#39;t know 
-# exactly how many rows of data you have
-df &lt;- muppets %&gt;%
-  map_dfc(~ as.data.frame(unlist(.))) %&gt;%
-  setNames(., c(&quot;name&quot;, &quot;age&quot;, &quot;occupation&quot;))
-
-df</code></pre>
-<pre><code>##     name age     occupation
-## 1 Beaker  30 lab technician
-## 2 Animal  24        drummer
-## 3 Kermit  40  event manager</code></pre>
-<p>I love the <a href="https://purrr.tidyverse.org/">purrr</a> package! It is one of my most favourite packages and is so incredibly powerful, but there’s already plenty written about that so let’s move on. Let’s unpack this second method a bit further. I’ll assume you’re already familiar with the dplyr package and piping. We initially take the muppets list and pass it to the map_dfc() function. This function is similar to the lapply function but it’s a bit more modern and returns a dataframe object. The ‘dfc’ suffix means it will apply the function to each element in the list of muppets, and then bind them together columnwise. There is another map function called map_dfr() which binds elements together row-wise.</p>
-<p>Anyway, that’s more than enough for this first post. In my next post I’ll get into some more complicated reading where we have data in several sheets, data in unusual ranges, and a few other ways to access ranges.</p>
+head(df)</code></pre>
+<pre><code>##                 unlist(.)    unlist(.)1 unlist(.)2
+## 1                    &lt;NA&gt;          &lt;NA&gt;       &lt;NA&gt;
+## 2                    &lt;NA&gt;          &lt;NA&gt;       &lt;NA&gt;
+## 3                    &lt;NA&gt;          &lt;NA&gt;       &lt;NA&gt;
+## 4 Data Unit in Kilolitres          &lt;NA&gt;       &lt;NA&gt;
+## 5                    &lt;NA&gt; Opening Stock   Receipts
+## 6               Fuel Type          &lt;NA&gt;    Imports
+##                                      unlist(.)3   unlist(.)4 unlist(.)5
+## 1                                          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;
+## 2                                          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;
+## 3                                          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;
+## 4                                          &lt;NA&gt;         &lt;NA&gt;       &lt;NA&gt;
+## 5                                          &lt;NA&gt; Intercompany       &lt;NA&gt;
+## 6 Refinery Deliveries, Manufacturers and Others        Sales  Purchases
+##          unlist(.)6              unlist(.)7             unlist(.)8
+## 1                                      &lt;NA&gt;                   &lt;NA&gt;
+## 2                                      &lt;NA&gt;                   &lt;NA&gt;
+## 3                                      &lt;NA&gt;                   &lt;NA&gt;
+## 4                                      &lt;NA&gt;                   &lt;NA&gt;
+## 5 Blends &amp; Rebrands                  Supply                   &lt;NA&gt;
+## 6              &lt;NA&gt; International Transport Electricity Generation
+##                   unlist(.)9          unlist(.)10 unlist(.)11
+## 1                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 2                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 3                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 4                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 5                       &lt;NA&gt;                 &lt;NA&gt;        &lt;NA&gt;
+## 6 Products for \nre-refining Other National Sales     Exports
+##                                     unlist(.)12 unlist(.)13   unlist(.)14
+## 1                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+## 2                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+## 3                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+## 4                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+## 5 Distribution Losses or Accounting Differences     Own Use Closing Stock
+## 6                                          &lt;NA&gt;        &lt;NA&gt;          &lt;NA&gt;
+##   unlist(.)15 unlist(.)16
+## 1        &lt;NA&gt;        &lt;NA&gt;
+## 2        &lt;NA&gt;        &lt;NA&gt;
+## 3        &lt;NA&gt;        &lt;NA&gt;
+## 4        &lt;NA&gt;        &lt;NA&gt;
+## 5 Error Check       Notes
+## 6        &lt;NA&gt;        &lt;NA&gt;</code></pre>
+<p>You’ll notice the map() function in the middle of the code snippet above. One of the tricky things about RDCOMClient is that if there is a NULL value in a cell, that cell is read as a NULL value, which means that it is effectively skipped. The function <code>ifelse(x == &quot;NULL&quot;, NA, x)</code> just means that if a NULL value is encountered, it is read as an NA value instead. This way we keep the necessary dimensions from the data to be able to create a rectangular dataframe.</p>
+<p>Now we have a neat dataframe built from the range in the document, but it’s still full of NA values and needs a lot of cleaning before we can actually use it in any analysis. In the next post I’ll look at how we can use the Find() method to further restrict the range we are reading based on specific values within the sheet.</p>
 <p>Session info for this post.</p>
 <pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
 <pre><code>## R version 3.5.0 (2018-04-23)
@@ -406,6 +377,8 @@ df</code></pre>
 
   <a class="tag tag--primary tag--small" href="/tags/excel/">Excel</a>
 
+  <a class="tag tag--primary tag--small" href="/tags/reading-data/">reading data</a>
+
                   </div>
                 
               
@@ -417,7 +390,7 @@ df</code></pre>
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-2/" data-tooltip="RDCOMClient Part 2 - UsedRange()">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-3-find/" data-tooltip="RDCOMClient Part 3 - Find()">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -425,7 +398,7 @@ df</code></pre>
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--disabled">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/introduction-to-rdcomclient/" data-tooltip="Introduction to RDCOMClient">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -443,19 +416,19 @@ df</code></pre>
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/introduction-to-rdcomclient/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-2/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/introduction-to-rdcomclient/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-2/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/introduction-to-rdcomclient/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-2/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -503,7 +476,7 @@ df</code></pre>
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-2/" data-tooltip="RDCOMClient Part 2 - UsedRange()">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-3-find/" data-tooltip="RDCOMClient Part 3 - Find()">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -511,7 +484,7 @@ df</code></pre>
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--disabled">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/introduction-to-rdcomclient/" data-tooltip="Introduction to RDCOMClient">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -529,19 +502,19 @@ df</code></pre>
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/introduction-to-rdcomclient/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-2/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/introduction-to-rdcomclient/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-2/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/introduction-to-rdcomclient/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-2/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -571,19 +544,19 @@ df</code></pre>
   <ul class="share-options">
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F10%2Fintroduction-to-rdcomclient%2F">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F10%2Frdcomclient-part-2%2F">
           <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F10%2Fintroduction-to-rdcomclient%2F">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F10%2Frdcomclient-part-2%2F">
           <i class="fa fa-twitter"></i><span>Share on Twitter</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F10%2Fintroduction-to-rdcomclient%2F">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F10%2Frdcomclient-part-2%2F">
           <i class="fa fa-google-plus"></i><span>Share on Google&#43;</span>
         </a>
       </li>
@@ -743,9 +716,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = '\/2018\/10\/introduction-to-rdcomclient\/';
+          this.page.url = '\/2018\/10\/rdcomclient-part-2\/';
           
-            this.page.identifier = '\/2018\/10\/introduction-to-rdcomclient\/'
+            this.page.identifier = '\/2018\/10\/rdcomclient-part-2\/'
           
         };
         (function() {

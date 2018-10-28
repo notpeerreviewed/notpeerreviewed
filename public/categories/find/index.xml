@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Find on notpeerreviewed</title>
+    <link>/categories/find/</link>
+    <description>Recent content in Find on notpeerreviewed</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 28 Oct 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/find/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>RDCOMClient Part 3 - Find()</title>
+      <link>/2018/10/rdcomclient-part-3-find/</link>
+      <pubDate>Sun, 28 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/rdcomclient-part-3-find/</guid>
+      <description>In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
+If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.</description>
+    </item>
+    
+  </channel>
+</rss>

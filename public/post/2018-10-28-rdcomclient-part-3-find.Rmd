@@ -1,0 +1,98 @@
+---
+title: RDCOMClient Part 3 - Find()
+author: Jeff Lean
+date: '2018-10-28'
+slug: rdcomclient-part-3-find
+categories:
+  - RDCOMClient
+  - Excel
+  - Find()
+tags:
+  - Excel
+  - RDCOMClient
+  - reading data
+---
+
+In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we'll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
+
+If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let's get our workspace up to the necessary point for this exercise.
+
+```{r, eval=TRUE, messages = FALSE}
+library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex <- COMCreate("Excel.Application")
+ex[["Visible"]] <- TRUE
+
+# access the Workbook object within ex
+Workbook <- ex[["workbooks"]]
+
+# open workbook
+current_file <- Workbook$Open("D:/notpeerreviewed/data/oil.xlsx")
+
+# specify the 1st sheet
+sheet <- current_file$Worksheets("Supply")
+
+
+```
+
+Ok, now we've got Excel running, the oil.xlsx document is open, and we've specified the 'Supply' sheet as the sheet we're looking at.
+The Find() method is very handy as it allows you to tell Excel to look for the first instance of a value in a given range. The Find() method returns a Range() object, which we can then query to get the address. Suppose we've got a long term survey and we know there is a cell in the header that contains the string "Fuel Type". We can get the address of that cell like this...
+
+```{r, eval=TRUE}
+sheet$UsedRange()$Find("Fuel Type")$Address()
+
+```
+
+
+Now that we know how to find a particular cell, we can use this to specify a range object. Say we want to read the range that includes all columns from the Fuel Type column to the Notes column, and down to the Totals row. First we need to be able to identify the row and column indexes. We can do that with the Row() and Column() methods. Let's find the column and row of the cell containing the string "Fuel Type".
+
+```{r, eval=TRUE}
+sheet$UsedRange()$Find("Fuel Type")$Column()
+sheet$UsedRange()$Find("Fuel Type")$Row() 
+```
+
+Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.
+
+```{r, eval=TRUE}
+c1 <- sheet$UsedRange()$Find("Fuel Type")$Column()      ## first col
+c2 <- sheet$UsedRange()$Find("Notes")$Column()          ## last col
+
+r1 <- sheet$UsedRange()$Find("Fuel Type")$Row()         ## first row
+r2 <- sheet$UsedRange()$Find("Totals")$Row()            ## last row
+
+
+# create the range object using the cells we found above
+range <- sheet$Range(sheet$Cells(r1+1,c1),sheet$Cells(r2,c2))
+
+# get data
+df <- range[['Value']] %>%
+  map(function(x) {ifelse(x == "NULL", NA, x)}) %>%
+  map_dfc(~ as.data.frame(unlist(.), stringsAsFactors = FALSE))
+
+head(df)
+
+```
+
+We could get really creative and read in the header data as well, but in this case there are a few cells that are merged, so this wouldn't work here without unmerging those cells first. In this case it would be simpler to specify the column names explicitly.
+
+```{r, eval=TRUE}
+header <- c("fuel", "openingStock", "imports", "refineryDeliveries", "sales", "purchases",
+            "reblending", "internationalTransport", "elecGen", "rerefining", "otherSales",
+            "exports", "losses", "ownUse", "closingStock", "errorCheck", "notes")
+
+colnames(df) <- header
+
+head(df)
+```
+
+Now you can specify a particular range of cells to be read based on finding a value in a particular cell. This is still nothing too spectacular, and certainly nothing that can't be done using another Excel reader like readxl combined with some judicious cleaning. In my next post I'll cover writing data to a document and formatting that data.
+
+Session info for this post.
+```{r, eval=TRUE, message=FALSE}
+print(sessionInfo(), locale = FALSE)
+
+```
+
+

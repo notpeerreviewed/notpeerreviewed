@@ -11,11 +11,29 @@
     
     
     <item>
-      <title>R</title>
-      <link>/categories/r/</link>
-      <pubDate>Sat, 21 Jul 2018 00:00:00 +0000</pubDate>
+      <title>Excel</title>
+      <link>/categories/excel/</link>
+      <pubDate>Sun, 28 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>/categories/r/</guid>
+      <guid>/categories/excel/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Find</title>
+      <link>/categories/find/</link>
+      <pubDate>Sun, 28 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/find/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Rdcomclient</title>
+      <link>/categories/rdcomclient/</link>
+      <pubDate>Sun, 28 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/rdcomclient/</guid>
       <description></description>
     </item>
     

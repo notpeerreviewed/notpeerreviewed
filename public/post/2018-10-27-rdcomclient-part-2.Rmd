@@ -1,0 +1,83 @@
+---
+title: RDCOMClient Part 2 - UsedRange()
+author: Jeff Lean
+date: '2018-10-27'
+slug: rdcomclient-part-2
+categories:
+  - RDCOMClient
+  - Excel
+tags:
+  - RDCOMClient
+  - Excel
+  - reading data
+---
+
+In my last post I covered how to open Excel and read some basic data. In this post I'm going to look at the UsedRange method.
+
+Firstly, I want to go through how to find these methods. The [RDCOMClient](http://www.omegahat.net/RDCOMClient/Docs/introduction.html) package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.
+
+First we'll open the document we're going to use for this example and specify the 'Supply' sheet for reading.
+
+```{r, eval=TRUE, messages = FALSE}
+library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex <- COMCreate("Excel.Application")
+ex[["Visible"]] <- TRUE
+
+# access the Workbook object within ex
+Workbook <- ex[["workbooks"]]
+
+# open workbook
+current_file <- Workbook$Open("D:/notpeerreviewed/data/oil.xlsx")
+
+# specify the 1st sheet
+sheet <- current_file$Worksheets("Supply")
+
+```
+
+Now that we've got our document open we can start looking at the data. The UsedRange property is important because when we are reading the data from a document we need to be able to access the Value property. If we don't know exactly what range our data is in, we can use the UsedRange property to tell Excel to look at the sheet we have chosen and create a range object that starts at the top left and includes all rows and all columns that include data.
+
+This is a good time to highlight one of the peculiarities of RDCOMClient. This is most likely due to my lack of understanding of how it actually exploits the COM, but the documentation says that methods are accessed by using the '$' notation and properties are accessed using the '[[]]' notation. However, I've found that sometimes you can access properties using the method notation. I have no idea why this works, but it does. When you are starting out it is generally a bit of a guessing game. Eventually you'll get a feel for what works and what doesn't. This is largely why I am writing this series of posts - to minimise the amount of time people need to get up and running with this package.
+
+
+```{r, eval=TRUE}
+# the following two statements are identical
+sheet[['UsedRange']]$Address()
+sheet$UsedRange()[['Address']]
+
+# assigning intermediate methods to a variable
+used_range <- sheet$UsedRange()
+used_range[['Address']]
+used_range$Address()
+
+```
+
+You can easily chain methods together, but I've found that if you try to chain properties together you'll get anything from an explicit error, to an unexpected result. Ultimately, I don't recommend chaining properties together, but a bit of trial and error will help work out the best approach. Anyway, getting back to the UsedRange approach...
+
+Since the Value property expects a range object, we can use the UsedRange method to pass a range object to the Value property like so.
+
+```{r, eval=TRUE}
+# specify range
+used_range <- sheet$UsedRange()
+
+# get data
+df <- used_range[['Value']] %>%
+  map(function(x) {ifelse(x == "NULL", NA, x)}) %>%
+  map_dfc(~ as.data.frame(unlist(.), stringsAsFactors = FALSE))
+
+head(df)
+
+```
+
+You'll notice the map() function in the middle of the code snippet above. One of the tricky things about RDCOMClient is that if there is a NULL value in a cell, that cell is read as a NULL value, which means that it is effectively skipped. The function `ifelse(x == "NULL", NA, x)` just means that if a NULL value is encountered, it is read as an NA value instead. This way we keep the necessary dimensions from the data to be able to create a rectangular dataframe.
+
+Now we have a neat dataframe built from the range in the document, but it's still full of NA values and needs a lot of cleaning before we can actually use it in any analysis. In the next post I'll look at how we can use the Find() method to further restrict the range we are reading based on specific values within the sheet.
+
+Session info for this post.
+```{r, eval=TRUE, message=FALSE}
+print(sessionInfo(), locale = FALSE)
+
+```
+
