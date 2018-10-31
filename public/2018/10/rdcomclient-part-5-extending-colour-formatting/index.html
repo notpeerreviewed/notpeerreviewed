@@ -20,7 +20,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.44 with theme Tranquilpeak 0.4.3-BETA">
-    <title>RDCOMClient Part 3 - Find()</title>
+    <title>RDCOMClient Part 5 - Extending colour formatting</title>
     <meta name="author" content="Jeff Lean">
     <meta name="keywords" content="">
 
@@ -28,18 +28,18 @@
     
 
     
-    <meta name="description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
-    <meta property="og:description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
+    <meta name="description" content="In my last post I introduced creating a new Excel workbook, writing data into that workbook, and applying some formatting to that data. In this post I’ll cover the following:
+Simplifying the colour specificationSaving your workbookSimplifying colour specificationAs we saw in the previous post, it is a bit difficult telling Excel what colour to use for something. You need to know the exact numeric reference for a colour and unless you have identified the colour through trial and error previously, it’s just not something you want to be doing.">
+    <meta property="og:description" content="In my last post I introduced creating a new Excel workbook, writing data into that workbook, and applying some formatting to that data. In this post I’ll cover the following:
+Simplifying the colour specificationSaving your workbookSimplifying colour specificationAs we saw in the previous post, it is a bit difficult telling Excel what colour to use for something. You need to know the exact numeric reference for a colour and unless you have identified the colour through trial and error previously, it’s just not something you want to be doing.">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="RDCOMClient Part 3 - Find()">
-    <meta property="og:url" content="/2018/10/rdcomclient-part-3-find/">
+    <meta property="og:title" content="RDCOMClient Part 5 - Extending colour formatting">
+    <meta property="og:url" content="/2018/10/rdcomclient-part-5-extending-colour-formatting/">
     <meta property="og:site_name" content="notpeerreviewed">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="notpeerreviewed">
-    <meta name="twitter:description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
+    <meta name="twitter:description" content="In my last post I introduced creating a new Excel workbook, writing data into that workbook, and applying some formatting to that data. In this post I’ll cover the following:
+Simplifying the colour specificationSaving your workbookSimplifying colour specificationAs we saw in the previous post, it is a bit difficult telling Excel what colour to use for something. You need to know the exact numeric reference for a colour and unless you have identified the colour through trial and error previously, it’s just not something you want to be doing.">
     
     
 
@@ -224,15 +224,15 @@ If you know that there is a cell within your data that always carries the same v
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      RDCOMClient Part 3 - Find()
+      RDCOMClient Part 5 - Extending colour formatting
     </h1>
   
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2018-10-28T00:00:00Z">
+      <time itemprop="datePublished" datetime="2018-10-31T00:00:00Z">
         
-  October 28, 2018
+  October 31, 2018
 
       </time>
     
@@ -241,13 +241,11 @@ If you know that there is a cell within your data that always carries the same v
   
     <span>in</span>
     
-      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>, 
-    
       <a class="category-link" href="/categories/excel">Excel</a>, 
     
-      <a class="category-link" href="/categories/find">Find()</a>, 
+      <a class="category-link" href="/categories/r">R</a>, 
     
-      <a class="category-link" href="/categories/r">R</a>
+      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>
     
   
 
@@ -257,100 +255,83 @@ If you know that there is a cell within your data that always carries the same v
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.</p>
-<p>If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let’s get our workspace up to the necessary point for this exercise. You can download this spreadsheet from <a href="https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data">here</a>.</p>
-<pre class="r"><code>library(RDCOMClient)
-suppressMessages(library(dplyr))
-library(purrr)
+              <p>In my last post I introduced creating a new Excel workbook, writing data into that workbook, and applying some formatting to that data. In this post I’ll cover the following:</p>
+<ul>
+<li>Simplifying the colour specification</li>
+<li>Saving your workbook</li>
+</ul>
+<div id="simplifying-colour-specification" class="section level2">
+<h2>Simplifying colour specification</h2>
+<p>As we saw in the previous post, it is a bit difficult telling Excel what colour to use for something. You need to know the exact numeric reference for a colour and unless you have identified the colour through trial and error previously, it’s just not something you want to be doing.</p>
+<p>Luckily for us this problem has been largely solved already. We will need to introduce another package here called <a href="https://www.rdocumentation.org/packages/gplots/versions/3.0.1">gplots</a>. This package includes a function called <code>col2hex</code>. This function takes a colour string like “red”, and outputs the respective hexadecimal code.</p>
+<p>According to <a href="https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf">this link</a>, R has 657 built-in colour names. We can just pass the desired colour name to the <code>col2hex</code> function and get our hex code back.</p>
+<p>About now some of you are probably asking what good is a hexadecimal code since we can’t pass it directly to Excel. Excellent question, well presented! When I first started playing around with this problem, I found the <code>strtoi</code> function from base R that converts strings to integers with a specified base. I thought I could just pass the hex code to this function and I’d easily get a number back. Well as it happens, you do get a number back - it’s just not the right number if you pass the whole hex code to the function.</p>
+<p>Here’s what I tried first. I’ll assume that you’ve got your Excel document open using the method we used in the previous post.</p>
+<pre class="r"><code>suppressMessages(library(gplots))
+library(stringr)
 
-ex &lt;- COMCreate(&quot;Excel.Application&quot;)
-ex[[&quot;Visible&quot;]] &lt;- TRUE
+# try converting a known colour to a hexadecimal value
+col2hex(&#39;red&#39;) # should give &quot;#FF0000&quot;</code></pre>
+<pre><code>## [1] &quot;#FF0000&quot;</code></pre>
+<pre class="r"><code># try converting that hexadecimal string to a decimal number
+strtoi(&quot;FF0000&quot;) </code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code># that didn&#39;t work because we didn&#39;t specify the base
+strtoi(&quot;FF0000&quot;, base = 16) </code></pre>
+<pre><code>## [1] 16711680</code></pre>
+<p>Since I knew that the colour red is represented by the hex code “#FF0000” I expected to see the strtoi() function return a value of 255, since I also knew that this is the number that red should correspond to. Clearly 16711680 was not going to give me the result I wanted. After a few hours looking around online I found <a href="https://stackoverflow.com/questions/8468855/convert-a-rgb-colour-value-to-decimal">this post</a> that described how the hex codes represent the red, green and blue channels of a colour.</p>
+<p>After finding that little gem, I just wrote a simple little function that takes a colour name as the argument. This function converts that string to a hexadecimal code, converts the respective colour channels to decimal numbers, and then combines them in the necessary way to arrive at a decimal number we can pass to Excel through the <code>[[&quot;Color&quot;]]</code> property.</p>
+<pre class="r"><code># create our function that will be used to calculate the decimal
+# representation of a colour
+colNum &lt;- function(colour = &quot;black&quot;){
+  
+  # catch error if a value other than a recognised colour is entered
+  if(!(colour %in% colours())){
+    stop(&quot;Please enter one of the R specified colours as a string.\n
+         The R colours can be found by typing colours().&quot;)
+  }
+  
+  # first convert colour to hexadecimal code and strip out the hashtag
+  value &lt;- col2hex(colour) %&gt;%
+    str_replace(&quot;#&quot;, &quot;&quot;)
+  
+  # get the component colours
+  R &lt;- str_sub(value, 1, 2) %&gt;% strtoi(base = 16)
+  
+  G &lt;- str_sub(value, 3, 4) %&gt;% strtoi(base = 16)
+  
+  B &lt;- str_sub(value, 5, 6) %&gt;% strtoi(base = 16)
+  
+  # calculate the decimal resultant of the three colour channels
+  colour &lt;- B * 65536 + G * 256 + R
+  
+  return(colour)
+}
 
-# access the Workbook object within ex
-Workbook &lt;- ex[[&quot;workbooks&quot;]]
+# now we can specify the colour of text in our target cell simply by 
+# passing a colour name to our function
+dataCellFont[[&quot;Color&quot;]] &lt;- colNum(&quot;magenta1&quot;)
 
-# open workbook
-current_file &lt;- Workbook$Open(&quot;D:/notpeerreviewed/data/oil.xlsx&quot;)
+dataCellFont[[&quot;Color&quot;]] &lt;- colNum(&quot;springgreen2&quot;)
 
-# specify the 1st sheet
-sheet &lt;- current_file$Worksheets(&quot;Supply&quot;)</code></pre>
-<p>Ok, now we’ve got Excel running, the oil.xlsx document is open, and we’ve specified the ‘Supply’ sheet as the sheet we’re looking at. The Find() method is very handy as it allows you to tell Excel to look for the first instance of a value in a given range. The Find() method returns a Range() object, which we can then query to get the address. Suppose we’ve got a long term survey and we know there is a cell in the header that contains the string “Fuel Type”. We can get the address of that cell like this…</p>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Address()</code></pre>
-<pre><code>## [1] &quot;$A$6&quot;</code></pre>
-<p>Now that we know how to find a particular cell, we can use this to specify a range object. Say we want to read the range that includes all columns from the Fuel Type column to the Notes column, and down to the Totals row. First we need to be able to identify the row and column indexes. We can do that with the Row() and Column() methods. Let’s find the column and row of the cell containing the string “Fuel Type”.</p>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()</code></pre>
-<pre><code>## [1] 1</code></pre>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row() </code></pre>
-<pre><code>## [1] 6</code></pre>
-<p>Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property. The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.</p>
-<pre class="r"><code>c1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()      ## first col
-c2 &lt;- sheet$UsedRange()$Find(&quot;Notes&quot;)$Column()          ## last col
+dataCellFont[[&quot;Color&quot;]] &lt;- colNum(&quot;red&quot;)</code></pre>
+</div>
+<div id="saving-your-workbook" class="section level2">
+<h2>Saving your workbook</h2>
+<p>Now that you’ve gone through all the effort to create your “Hello World!” document, you’ll be wanting to save it so you can keep it.</p>
+<p>This is a simple matter of using the SaveAs method on the workbook object. Be sure to specify where you want to save your document by passing a path string as an argument. If you don’t provide a path, the document will save in your current working directory. In order to make sure your document saves smoothly, you can include the command <code>ex[[&quot;DisplayAlerts&quot;]] &lt;- FALSE</code> before you save your document. This will prevent a popup message asking if you want to replace your document. It is important to remember to restore your DisplayAlerts property to TRUE at the end of your script.</p>
+<pre class="r"><code>ex[[&quot;DisplayAlerts&quot;]] &lt;- FALSE
+current_file$SaveAs(&quot;D:\\notpeerreviewed\\data\\hello_world.xlsx&quot;)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># close the current document
+current_file$Close(SaveChanges = TRUE)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>ex[[&quot;DisplayAlerts&quot;]] &lt;- TRUE
 
-r1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row()         ## first row
-r2 &lt;- sheet$UsedRange()$Find(&quot;Totals&quot;)$Row()            ## last row
-
-
-# create the range object using the cells we found above
-# we&#39;re using r1+1 because we don&#39;t want to read in the header row
-range &lt;- sheet$Range(sheet$Cells(r1+1,c1),sheet$Cells(r2,c2))
-
-# get data
-df &lt;- range[[&#39;Value&#39;]] %&gt;%
-  map(function(x) {ifelse(x == &quot;NULL&quot;, NA, x)}) %&gt;%
-  map_dfc(~ as.data.frame(unlist(.), stringsAsFactors = FALSE))
-
-head(df)</code></pre>
-<pre><code>##                    unlist(.) unlist(.)1 unlist(.)2 unlist(.)3 unlist(.)4
-## 1             Premium Petrol    391.726   9457.211  13206.803   6377.691
-## 2             Regular Petrol  13332.860   38373.96  28472.584  16734.403
-## 3          Automotive Diesel  99497.579  47814.021  21607.902   8320.415
-## 4             Light Fuel Oil  16272.644          0   6007.899          0
-## 5   Heavy (residue) Fuel Oil -33022.470          0   2119.214          0
-## 6 Jet-A1 / Avtur / Av. kero.  13979.257          0  34208.210          0
-##   unlist(.)5 unlist(.)6 unlist(.)7 unlist(.)8 unlist(.)9 unlist(.)10
-## 1          0    -57.529         NA         NA         NA    6192.815
-## 2          0     92.609         NA         NA         NA   49620.464
-## 3          0     25.402     96.676         NA         NA   72716.520
-## 4          0         NA         NA         NA         NA    4882.538
-## 5          0         NA   3499.964         NA         NA          NA
-## 6          0         NA  23207.180         NA         NA   15299.322
-##   unlist(.)11 unlist(.)12 unlist(.)13 unlist(.)14 unlist(.)15 unlist(.)16
-## 1           0      69.000          NA    10358.34           0          NA
-## 2           0      -4.000          NA    13921.15           0          NA
-## 3           0     -34.000          NA    87846.03           0          NA
-## 4           0      67.840          NA    17330.17           0          NA
-## 5           0     -24.391          NA   -34378.83           0          NA
-## 6           0      14.515          NA     9666.45           0          NA</code></pre>
-<p>We could get really creative and read in the header data as well, but in this case there are a few cells that are merged, so this wouldn’t work here without unmerging those cells first. In this case it would be simpler to specify the column names explicitly.</p>
-<pre class="r"><code>header &lt;- c(&quot;fuel&quot;, &quot;openingStock&quot;, &quot;imports&quot;, &quot;refineryDeliveries&quot;, &quot;sales&quot;, &quot;purchases&quot;,
-            &quot;reblending&quot;, &quot;internationalTransport&quot;, &quot;elecGen&quot;, &quot;rerefining&quot;, &quot;otherSales&quot;,
-            &quot;exports&quot;, &quot;losses&quot;, &quot;ownUse&quot;, &quot;closingStock&quot;, &quot;errorCheck&quot;, &quot;notes&quot;)
-
-colnames(df) &lt;- header
-
-head(df)</code></pre>
-<pre><code>##                         fuel openingStock   imports refineryDeliveries
-## 1             Premium Petrol      391.726  9457.211          13206.803
-## 2             Regular Petrol    13332.860  38373.96          28472.584
-## 3          Automotive Diesel    99497.579 47814.021          21607.902
-## 4             Light Fuel Oil    16272.644         0           6007.899
-## 5   Heavy (residue) Fuel Oil   -33022.470         0           2119.214
-## 6 Jet-A1 / Avtur / Av. kero.    13979.257         0          34208.210
-##       sales purchases reblending internationalTransport elecGen rerefining
-## 1  6377.691         0    -57.529                     NA      NA         NA
-## 2 16734.403         0     92.609                     NA      NA         NA
-## 3  8320.415         0     25.402                 96.676      NA         NA
-## 4         0         0         NA                     NA      NA         NA
-## 5         0         0         NA               3499.964      NA         NA
-## 6         0         0         NA              23207.180      NA         NA
-##   otherSales exports  losses ownUse closingStock errorCheck notes
-## 1   6192.815       0  69.000     NA     10358.34          0    NA
-## 2  49620.464       0  -4.000     NA     13921.15          0    NA
-## 3  72716.520       0 -34.000     NA     87846.03          0    NA
-## 4   4882.538       0  67.840     NA     17330.17          0    NA
-## 5         NA       0 -24.391     NA    -34378.83          0    NA
-## 6  15299.322       0  14.515     NA      9666.45          0    NA</code></pre>
-<p>Now you can specify a particular range of cells to be read based on finding a value in a particular cell. This is still nothing too spectacular, and certainly nothing that can’t be done using another Excel reader like readxl combined with some judicious cleaning. In my next post I’ll cover writing data to a document and formatting that data.</p>
+# now we can quit Excel
+ex$Quit()</code></pre>
+<pre><code>## NULL</code></pre>
+<p>This post has been a bit more about understanding the underlying workings of how R deals with colours and how different colour codes work. In my next post I’ll show how to write a more realistic example of data into a workbook.</p>
 <p>Session info for this post.</p>
 <pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
 <pre><code>## R version 3.5.0 (2018-04-23)
@@ -363,16 +344,22 @@ head(df)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] purrr_0.2.5        dplyr_0.7.5        RDCOMClient_0.93-0
+## [1] stringr_1.3.1      gplots_3.0.1       purrr_0.2.5       
+## [4] dplyr_0.7.5        RDCOMClient_0.93-0
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.17     knitr_1.20       bindr_0.1.1      magrittr_1.5    
-##  [5] tidyselect_0.2.4 R6_2.2.2         rlang_0.2.1      stringr_1.3.1   
-##  [9] tools_3.5.0      xfun_0.3         htmltools_0.3.6  yaml_2.1.19     
-## [13] rprojroot_1.3-2  digest_0.6.15    assertthat_0.2.0 tibble_1.4.2    
-## [17] bookdown_0.7     bindrcpp_0.2.2   glue_1.2.0       evaluate_0.10.1 
-## [21] rmarkdown_1.10   blogdown_0.8.1   stringi_1.1.7    compiler_3.5.0  
-## [25] pillar_1.2.3     backports_1.1.2  pkgconfig_2.0.1</code></pre>
+##  [1] Rcpp_0.12.17       knitr_1.20         bindr_0.1.1       
+##  [4] magrittr_1.5       tidyselect_0.2.4   R6_2.2.2          
+##  [7] rlang_0.2.1        caTools_1.17.1.1   tools_3.5.0       
+## [10] xfun_0.3           KernSmooth_2.23-15 gtools_3.8.1      
+## [13] htmltools_0.3.6    yaml_2.1.19        rprojroot_1.3-2   
+## [16] digest_0.6.15      assertthat_0.2.0   tibble_1.4.2      
+## [19] bookdown_0.7       bindrcpp_0.2.2     bitops_1.0-6      
+## [22] glue_1.2.0         evaluate_0.10.1    rmarkdown_1.10    
+## [25] blogdown_0.8.1     gdata_2.18.0       stringi_1.1.7     
+## [28] compiler_3.5.0     pillar_1.2.3       backports_1.1.2   
+## [31] pkgconfig_2.0.1</code></pre>
+</div>
 
               
             </div>
@@ -387,11 +374,9 @@ head(df)</code></pre>
                     
   <a class="tag tag--primary tag--small" href="/tags/excel/">Excel</a>
 
-  <a class="tag tag--primary tag--small" href="/tags/rdcomclient/">RDCOMClient</a>
-
-  <a class="tag tag--primary tag--small" href="/tags/reading-data/">reading data</a>
-
   <a class="tag tag--primary tag--small" href="/tags/r/">R</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/rdcomclient/">RDCOMClient</a>
 
                   </div>
                 
@@ -404,7 +389,7 @@ head(df)</code></pre>
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" data-tooltip="RDCOMClient Part 4 - Writing data to Excel">
+                <a class="post-action-btn btn btn--disabled">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -412,7 +397,7 @@ head(df)</code></pre>
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-2/" data-tooltip="RDCOMClient Part 2 - UsedRange()">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" data-tooltip="RDCOMClient Part 4 - Writing data to Excel">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -430,19 +415,19 @@ head(df)</code></pre>
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-5-extending-colour-formatting/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-5-extending-colour-formatting/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-5-extending-colour-formatting/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -497,7 +482,7 @@ s.setAttribute('data-timestamp', +new Date());
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" data-tooltip="RDCOMClient Part 4 - Writing data to Excel">
+                <a class="post-action-btn btn btn--disabled">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -505,7 +490,7 @@ s.setAttribute('data-timestamp', +new Date());
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-2/" data-tooltip="RDCOMClient Part 2 - UsedRange()">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" data-tooltip="RDCOMClient Part 4 - Writing data to Excel">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -523,19 +508,19 @@ s.setAttribute('data-timestamp', +new Date());
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-5-extending-colour-formatting/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-5-extending-colour-formatting/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-5-extending-colour-formatting/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -565,19 +550,19 @@ s.setAttribute('data-timestamp', +new Date());
   <ul class="share-options">
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F10%2Frdcomclient-part-5-extending-colour-formatting%2F">
           <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F10%2Frdcomclient-part-5-extending-colour-formatting%2F">
           <i class="fa fa-twitter"></i><span>Share on Twitter</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F10%2Frdcomclient-part-5-extending-colour-formatting%2F">
           <i class="fa fa-google-plus"></i><span>Share on Google&#43;</span>
         </a>
       </li>
@@ -774,9 +759,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = '\/2018\/10\/rdcomclient-part-3-find\/';
+          this.page.url = '\/2018\/10\/rdcomclient-part-5-extending-colour-formatting\/';
           
-            this.page.identifier = '\/2018\/10\/rdcomclient-part-3-find\/'
+            this.page.identifier = '\/2018\/10\/rdcomclient-part-5-extending-colour-formatting\/'
           
         };
         (function() {

@@ -6,17 +6,19 @@ slug: rdcomclient-part-2
 categories:
   - RDCOMClient
   - Excel
+  - R
 tags:
   - RDCOMClient
   - Excel
   - reading data
+  - R
 ---
 
 In my last post I covered how to open Excel and read some basic data. In this post I'm going to look at the UsedRange method.
 
 Firstly, I want to go through how to find these methods. The [RDCOMClient](http://www.omegahat.net/RDCOMClient/Docs/introduction.html) package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.
 
-First we'll open the document we're going to use for this example and specify the 'Supply' sheet for reading.
+First we'll open the document we're going to use for this example and specify the 'Supply' sheet for reading. You can download this spreadsheet from [here](https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data).
 
 ```{r, eval=TRUE, messages = FALSE}
 library(RDCOMClient)
@@ -37,7 +39,7 @@ sheet <- current_file$Worksheets("Supply")
 
 ```
 
-Now that we've got our document open we can start looking at the data. The UsedRange property is important because when we are reading the data from a document we need to be able to access the Value property. If we don't know exactly what range our data is in, we can use the UsedRange property to tell Excel to look at the sheet we have chosen and create a range object that starts at the top left and includes all rows and all columns that include data.
+Now that we've got our document open we can start looking at the data. As I showed in my first post, we need to combine the Value property with a Range object if we want to be able to read our data. A very convenient way to specify a range that includes all extents of data on a particular sheet is the UsedRange method. If our worksheet includes data in columns A through G (even if there are some empty columns in that range), and data down to row 123 then calling UsedRange will create a range object of A1:G123.
 
 This is a good time to highlight one of the peculiarities of RDCOMClient. This is most likely due to my lack of understanding of how it actually exploits the COM, but the documentation says that methods are accessed by using the '$' notation and properties are accessed using the '[[]]' notation. However, I've found that sometimes you can access properties using the method notation. I have no idea why this works, but it does. When you are starting out it is generally a bit of a guessing game. Eventually you'll get a feel for what works and what doesn't. This is largely why I am writing this series of posts - to minimise the amount of time people need to get up and running with this package.
 

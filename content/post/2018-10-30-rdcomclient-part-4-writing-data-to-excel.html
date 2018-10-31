@@ -1,0 +1,106 @@
+---
+title: RDCOMClient Part 4 - Writing data to Excel
+author: Jeff Lean
+date: '2018-10-30'
+slug: rdcomclient-part-4-writing-data-to-excel
+categories:
+  - RDCOMClient
+  - Excel
+  - R
+tags:
+  - Excel
+  - RDCOMClient
+  - R
+---
+
+
+
+<p>In the last few posts we’ve covered how to read data from Excel into R. In this post we’ll start looking at how to write data into Excel using RDCOMClient. Generally speaking, it is quite easy to write from R to Excel using this package, but there are a few key things to remember.</p>
+<p>In this post I’ll cover the following:</p>
+<ul>
+<li>creating a new Excel document from R</li>
+<li>writing data to a specified range</li>
+<li>basic formatting of your data</li>
+</ul>
+<div id="creating-a-new-excel-document" class="section level2">
+<h2>Creating a new Excel document</h2>
+<p>This is no different to what we’ve done in the past few posts. You just have to open an instance of Excel using the <code>COMCreate(&quot;Excel.Application&quot;)</code> command and then use the Add() method with the workbook object.</p>
+<pre class="r"><code>library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+ex[[&quot;Visible&quot;]] &lt;- TRUE
+
+# access the Workbook object within ex
+Workbook &lt;- ex[[&quot;workbooks&quot;]]
+
+# create a new workbook
+current_file &lt;- Workbook$Add()</code></pre>
+<p>Now that we have a fresh Excel workbook to play with, we can start with the “Hello World” of writing with RDCOMClient!</p>
+</div>
+<div id="writing-data-to-a-specified-range" class="section level2">
+<h2>Writing data to a specified range</h2>
+<p>All we have to do to write data to a specified range is create the range object, and then specify the value we want to pass to the [[“Value”]] property of that range.</p>
+<pre class="r"><code># specify the sheet
+sheet &lt;- current_file$Worksheets(1)
+
+# for this example we&#39;ll just use cell A1 for the range
+range &lt;- sheet$Range(&quot;A1&quot;)
+
+# create the hello world string
+myString &lt;- &quot;Hello World!&quot;
+
+# set the value of range to myString
+range[[&quot;Value&quot;]] &lt;- myString</code></pre>
+<p>Ok, so that was actually pretty easy right? We’ll keep using this simple example for the moment, while we explore playing with the formatting.</p>
+</div>
+<div id="basic-formatting-of-your-data" class="section level2">
+<h2>Basic formatting of your data</h2>
+<p>If we’re preparing a document for publishing, or just want to make a particular part of our data stand out for some reason, we might want to change the font type, the font size, or the colour. It’s actually really easy to modify the font type, make your font bold or italic, or change the size. Changing the colour is a bit less obvious.</p>
+<p>If you want to change the font type you first have to access the font property of the range object. This is done by accessing <code>range[[&quot;Font&quot;]]</code>. You then need to access the various properties of that object so you can assign a value, as shown below. If you want to change the colour you actually need to specify a decimal number to be passed to the <code>Font[[&quot;Color&quot;]]</code> property. By decimal, I just mean base 10, rather than hexadecimal.</p>
+<p>Here’s some simple examples</p>
+<pre class="r"><code># specify the font property to be the thing we are modifying
+dataCellFont &lt;- range[[&quot;Font&quot;]]
+
+# change the font size to 20
+dataCellFont[[&quot;Size&quot;]] &lt;- 20
+
+# make the text bold
+dataCellFont[[&quot;Bold&quot;]] &lt;- TRUE
+
+# change the font to be Arial
+dataCellFont[[&quot;Name&quot;]] &lt;- &#39;Arial&#39;
+
+# make the text Italic
+dataCellFont[[&quot;Italic&quot;]] &lt;- TRUE
+
+# make the text red
+dataCellFont[[&quot;Color&quot;]] &lt;- 255</code></pre>
+<p>Assigning a colour is clearly not the easiest thing to control. Excel uses a base 10 number between 1 and around 17 million to represent the red, green, and blue channels. I’ll get into more detail about how we can simplify this soon.</p>
+<p>You might have noticed that we are assigning <code>range[[&quot;Font&quot;]]</code> to the variable <code>dataCellFont</code>. This is because if you try to chain properties together like <code>range[[&quot;Font&quot;]][[&quot;Size&quot;]]</code> you will sometimes get very unexpected results. I’ve found it is just simpler to explicitly assign the initial property to a variable and then access additional properties through that variable.</p>
+<p>This is all relatively simple stuff, but hopefully you are starting to get an idea of how useful this could be. Being able to have such fine control over the formatting options for any aspect of an Excel workbook means you can build a script that will generate a publication ready document as part of a reproducible workflow.</p>
+<p>In my next post I’ll examine a way to make specifying colours easier.</p>
+<p>Session info for this post.</p>
+<pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
+<pre><code>## R version 3.5.0 (2018-04-23)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17134)
+## 
+## Matrix products: default
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] purrr_0.2.5        dplyr_0.7.5        RDCOMClient_0.93-0
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.12.17     knitr_1.20       bindr_0.1.1      magrittr_1.5    
+##  [5] tidyselect_0.2.4 R6_2.2.2         rlang_0.2.1      stringr_1.3.1   
+##  [9] tools_3.5.0      xfun_0.3         htmltools_0.3.6  yaml_2.1.19     
+## [13] rprojroot_1.3-2  digest_0.6.15    assertthat_0.2.0 tibble_1.4.2    
+## [17] bookdown_0.7     bindrcpp_0.2.2   glue_1.2.0       evaluate_0.10.1 
+## [21] rmarkdown_1.10   blogdown_0.8.1   stringi_1.1.7    compiler_3.5.0  
+## [25] pillar_1.2.3     backports_1.1.2  pkgconfig_2.0.1</code></pre>
+</div>

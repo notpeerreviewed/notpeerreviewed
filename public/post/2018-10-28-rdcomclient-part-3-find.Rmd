@@ -7,15 +7,17 @@ categories:
   - RDCOMClient
   - Excel
   - Find()
+  - R
 tags:
   - Excel
   - RDCOMClient
   - reading data
+  - R
 ---
 
 In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we'll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
 
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let's get our workspace up to the necessary point for this exercise.
+If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let's get our workspace up to the necessary point for this exercise. You can download this spreadsheet from [here](https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data).
 
 ```{r, eval=TRUE, messages = FALSE}
 library(RDCOMClient)
@@ -53,7 +55,7 @@ sheet$UsedRange()$Find("Fuel Type")$Column()
 sheet$UsedRange()$Find("Fuel Type")$Row() 
 ```
 
-Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.
+Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property. The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.
 
 ```{r, eval=TRUE}
 c1 <- sheet$UsedRange()$Find("Fuel Type")$Column()      ## first col
@@ -64,6 +66,7 @@ r2 <- sheet$UsedRange()$Find("Totals")$Row()            ## last row
 
 
 # create the range object using the cells we found above
+# we're using r1+1 because we don't want to read in the header row
 range <- sheet$Range(sheet$Cells(r1+1,c1),sheet$Cells(r2,c2))
 
 # get data

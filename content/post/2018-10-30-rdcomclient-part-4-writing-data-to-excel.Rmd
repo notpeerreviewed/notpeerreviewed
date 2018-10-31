@@ -1,0 +1,114 @@
+---
+title: RDCOMClient Part 4 - Writing data to Excel
+author: Jeff Lean
+date: '2018-10-30'
+slug: rdcomclient-part-4-writing-data-to-excel
+categories:
+  - RDCOMClient
+  - Excel
+  - R
+tags:
+  - Excel
+  - RDCOMClient
+  - R
+---
+
+In the last few posts we've covered how to read data from Excel into R. In this post we'll start looking at how to write data into Excel using RDCOMClient. Generally speaking, it is quite easy to write from R to Excel using this package, but there are a few key things to remember.
+
+In this post I'll cover the following:
+
+* creating a new Excel document from R
+* writing data to a specified range
+* basic formatting of your data
+
+
+## Creating a new Excel document
+
+This is no different to what we've done in the past few posts. You just have to open an instance of Excel using the `COMCreate("Excel.Application")` command and then use the Add() method with the workbook object.
+
+```{r, eval=TRUE, messages = FALSE}
+library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex <- COMCreate("Excel.Application")
+ex[["Visible"]] <- TRUE
+
+# access the Workbook object within ex
+Workbook <- ex[["workbooks"]]
+
+# create a new workbook
+current_file <- Workbook$Add()
+
+```
+
+
+Now that we have a fresh Excel workbook to play with, we can start with the "Hello World" of writing with RDCOMClient!
+
+## Writing data to a specified range
+
+All we have to do to write data to a specified range is create the range object, and then specify the value we want to pass to the [["Value"]] property of that range.
+
+```{r, eval=TRUE, messages = FALSE}
+# specify the sheet
+sheet <- current_file$Worksheets(1)
+
+# for this example we'll just use cell A1 for the range
+range <- sheet$Range("A1")
+
+# create the hello world string
+myString <- "Hello World!"
+
+# set the value of range to myString
+range[["Value"]] <- myString
+
+```
+
+Ok, so that was actually pretty easy right? We'll keep using this simple example for the moment, while we explore playing with the formatting.
+
+## Basic formatting of your data
+
+If we're preparing a document for publishing, or just want to make a particular part of our data stand out for some reason, we might want to change the font type, the font size, or the colour. It's actually really easy to modify the font type, make your font bold or italic, or change the size. Changing the colour is a bit less obvious.
+
+If you want to change the font type you first have to access the font property of the range object. This is done by accessing `range[["Font"]]`. You then need to access the various properties of that object so you can assign a value, as shown below. If you want to change the colour you actually need to specify a decimal number to be passed to the `Font[["Color"]]` property. By decimal, I just mean base 10, rather than hexadecimal.
+
+Here's some simple examples
+
+```{r, eval=TRUE, messages = FALSE}
+# specify the font property to be the thing we are modifying
+dataCellFont <- range[["Font"]]
+
+# change the font size to 20
+dataCellFont[["Size"]] <- 20
+
+# make the text bold
+dataCellFont[["Bold"]] <- TRUE
+
+# change the font to be Arial
+dataCellFont[["Name"]] <- 'Arial'
+
+# make the text Italic
+dataCellFont[["Italic"]] <- TRUE
+
+# make the text red
+dataCellFont[["Color"]] <- 255
+
+```
+
+Assigning a colour is clearly not the easiest thing to control. Excel uses a base 10 number between 1 and around 17 million to represent the red, green, and blue channels. I'll get into more detail about how we can simplify this soon.
+
+You might have noticed that we are assigning `range[["Font"]]` to the variable `dataCellFont`. This is because if you try to chain properties together like `range[["Font"]][["Size"]]` you will sometimes get very unexpected results. I've found it is just simpler to explicitly assign the initial property to a variable and then access additional properties through that variable.
+
+This is all relatively simple stuff, but hopefully you are starting to get an idea of how useful this could be. Being able to have such fine control over the formatting options for any aspect of an Excel workbook means you can build a script that will generate a publication ready document as part of a reproducible workflow.
+
+In my next post I'll examine a way to make specifying colours easier.
+
+
+Session info for this post.
+```{r, eval=TRUE, message=FALSE}
+print(sessionInfo(), locale = FALSE)
+
+```
+
+
+

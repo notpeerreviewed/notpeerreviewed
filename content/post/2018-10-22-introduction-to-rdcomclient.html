@@ -6,7 +6,11 @@ slug: introduction-to-rdcomclient
 tags:
 - RDCOMClient
 - Excel
-categories: []
+- R
+categories:
+- RDCOMClient
+- Excel
+- R
 ---
 
 
@@ -25,7 +29,7 @@ categories: []
 ex &lt;- COMCreate(&quot;Excel.Application&quot;)</code></pre>
 <p>So far it doesn’t look like much is happening does it? Well we’ve only just created an instance of Excel. We haven’t actually opened the Excel interface. Excel is actually running now, but we just can’t see it. We can examine the “Visible” property of “ex” by typing ex[[“Visible”]], This will return the current value of the property.</p>
 <pre class="r"><code>ex[[&quot;Visible&quot;]]</code></pre>
-<pre><code>## [1] TRUE</code></pre>
+<pre><code>## [1] FALSE</code></pre>
 <p>If we want to see the “ex” object then we need to set the “Visible” property to TRUE. To access a property of an object you use the double bracket syntax “[[]]”.</p>
 <pre class="r"><code>ex[[&quot;Visible&quot;]] &lt;- TRUE</code></pre>
 <p>By now I’m sure you’re thinking, big deal. What if I actually want to open a document and read its contents. Ok, let’s do that then! For this example I’m going to use a simple .xlsx file called muppets.xlsx. You can download this file from <a href="https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data">here</a>. Be sure to save it in a location you can easily access through R.</p>

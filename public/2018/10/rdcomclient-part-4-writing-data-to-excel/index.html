@@ -20,7 +20,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.44 with theme Tranquilpeak 0.4.3-BETA">
-    <title>RDCOMClient Part 3 - Find()</title>
+    <title>RDCOMClient Part 4 - Writing data to Excel</title>
     <meta name="author" content="Jeff Lean">
     <meta name="keywords" content="">
 
@@ -28,18 +28,21 @@
     
 
     
-    <meta name="description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
-    <meta property="og:description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
+    <meta name="description" content="In the last few posts we’ve covered how to read data from Excel into R. In this post we’ll start looking at how to write data into Excel using RDCOMClient. Generally speaking, it is quite easy to write from R to Excel using this package, but there are a few key things to remember.
+In this post I’ll cover the following:
+creating a new Excel document from Rwriting data to a specified rangebasic formatting of your dataCreating a new Excel documentThis is no different to what we’ve done in the past few posts.">
+    <meta property="og:description" content="In the last few posts we’ve covered how to read data from Excel into R. In this post we’ll start looking at how to write data into Excel using RDCOMClient. Generally speaking, it is quite easy to write from R to Excel using this package, but there are a few key things to remember.
+In this post I’ll cover the following:
+creating a new Excel document from Rwriting data to a specified rangebasic formatting of your dataCreating a new Excel documentThis is no different to what we’ve done in the past few posts.">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="RDCOMClient Part 3 - Find()">
-    <meta property="og:url" content="/2018/10/rdcomclient-part-3-find/">
+    <meta property="og:title" content="RDCOMClient Part 4 - Writing data to Excel">
+    <meta property="og:url" content="/2018/10/rdcomclient-part-4-writing-data-to-excel/">
     <meta property="og:site_name" content="notpeerreviewed">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="notpeerreviewed">
-    <meta name="twitter:description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
+    <meta name="twitter:description" content="In the last few posts we’ve covered how to read data from Excel into R. In this post we’ll start looking at how to write data into Excel using RDCOMClient. Generally speaking, it is quite easy to write from R to Excel using this package, but there are a few key things to remember.
+In this post I’ll cover the following:
+creating a new Excel document from Rwriting data to a specified rangebasic formatting of your dataCreating a new Excel documentThis is no different to what we’ve done in the past few posts.">
     
     
 
@@ -224,15 +227,15 @@ If you know that there is a cell within your data that always carries the same v
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      RDCOMClient Part 3 - Find()
+      RDCOMClient Part 4 - Writing data to Excel
     </h1>
   
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2018-10-28T00:00:00Z">
+      <time itemprop="datePublished" datetime="2018-10-30T00:00:00Z">
         
-  October 28, 2018
+  October 30, 2018
 
       </time>
     
@@ -245,8 +248,6 @@ If you know that there is a cell within your data that always carries the same v
     
       <a class="category-link" href="/categories/excel">Excel</a>, 
     
-      <a class="category-link" href="/categories/find">Find()</a>, 
-    
       <a class="category-link" href="/categories/r">R</a>
     
   
@@ -257,8 +258,16 @@ If you know that there is a cell within your data that always carries the same v
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.</p>
-<p>If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let’s get our workspace up to the necessary point for this exercise. You can download this spreadsheet from <a href="https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data">here</a>.</p>
+              <p>In the last few posts we’ve covered how to read data from Excel into R. In this post we’ll start looking at how to write data into Excel using RDCOMClient. Generally speaking, it is quite easy to write from R to Excel using this package, but there are a few key things to remember.</p>
+<p>In this post I’ll cover the following:</p>
+<ul>
+<li>creating a new Excel document from R</li>
+<li>writing data to a specified range</li>
+<li>basic formatting of your data</li>
+</ul>
+<div id="creating-a-new-excel-document" class="section level2">
+<h2>Creating a new Excel document</h2>
+<p>This is no different to what we’ve done in the past few posts. You just have to open an instance of Excel using the <code>COMCreate(&quot;Excel.Application&quot;)</code> command and then use the Add() method with the workbook object.</p>
 <pre class="r"><code>library(RDCOMClient)
 suppressMessages(library(dplyr))
 library(purrr)
@@ -269,88 +278,52 @@ ex[[&quot;Visible&quot;]] &lt;- TRUE
 # access the Workbook object within ex
 Workbook &lt;- ex[[&quot;workbooks&quot;]]
 
-# open workbook
-current_file &lt;- Workbook$Open(&quot;D:/notpeerreviewed/data/oil.xlsx&quot;)
+# create a new workbook
+current_file &lt;- Workbook$Add()</code></pre>
+<p>Now that we have a fresh Excel workbook to play with, we can start with the “Hello World” of writing with RDCOMClient!</p>
+</div>
+<div id="writing-data-to-a-specified-range" class="section level2">
+<h2>Writing data to a specified range</h2>
+<p>All we have to do to write data to a specified range is create the range object, and then specify the value we want to pass to the [[“Value”]] property of that range.</p>
+<pre class="r"><code># specify the sheet
+sheet &lt;- current_file$Worksheets(1)
 
-# specify the 1st sheet
-sheet &lt;- current_file$Worksheets(&quot;Supply&quot;)</code></pre>
-<p>Ok, now we’ve got Excel running, the oil.xlsx document is open, and we’ve specified the ‘Supply’ sheet as the sheet we’re looking at. The Find() method is very handy as it allows you to tell Excel to look for the first instance of a value in a given range. The Find() method returns a Range() object, which we can then query to get the address. Suppose we’ve got a long term survey and we know there is a cell in the header that contains the string “Fuel Type”. We can get the address of that cell like this…</p>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Address()</code></pre>
-<pre><code>## [1] &quot;$A$6&quot;</code></pre>
-<p>Now that we know how to find a particular cell, we can use this to specify a range object. Say we want to read the range that includes all columns from the Fuel Type column to the Notes column, and down to the Totals row. First we need to be able to identify the row and column indexes. We can do that with the Row() and Column() methods. Let’s find the column and row of the cell containing the string “Fuel Type”.</p>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()</code></pre>
-<pre><code>## [1] 1</code></pre>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row() </code></pre>
-<pre><code>## [1] 6</code></pre>
-<p>Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property. The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.</p>
-<pre class="r"><code>c1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()      ## first col
-c2 &lt;- sheet$UsedRange()$Find(&quot;Notes&quot;)$Column()          ## last col
+# for this example we&#39;ll just use cell A1 for the range
+range &lt;- sheet$Range(&quot;A1&quot;)
 
-r1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row()         ## first row
-r2 &lt;- sheet$UsedRange()$Find(&quot;Totals&quot;)$Row()            ## last row
+# create the hello world string
+myString &lt;- &quot;Hello World!&quot;
 
+# set the value of range to myString
+range[[&quot;Value&quot;]] &lt;- myString</code></pre>
+<p>Ok, so that was actually pretty easy right? We’ll keep using this simple example for the moment, while we explore playing with the formatting.</p>
+</div>
+<div id="basic-formatting-of-your-data" class="section level2">
+<h2>Basic formatting of your data</h2>
+<p>If we’re preparing a document for publishing, or just want to make a particular part of our data stand out for some reason, we might want to change the font type, the font size, or the colour. It’s actually really easy to modify the font type, make your font bold or italic, or change the size. Changing the colour is a bit less obvious.</p>
+<p>If you want to change the font type you first have to access the font property of the range object. This is done by accessing <code>range[[&quot;Font&quot;]]</code>. You then need to access the various properties of that object so you can assign a value, as shown below. If you want to change the colour you actually need to specify a decimal number to be passed to the <code>Font[[&quot;Color&quot;]]</code> property. By decimal, I just mean base 10, rather than hexadecimal.</p>
+<p>Here’s some simple examples</p>
+<pre class="r"><code># specify the font property to be the thing we are modifying
+dataCellFont &lt;- range[[&quot;Font&quot;]]
 
-# create the range object using the cells we found above
-# we&#39;re using r1+1 because we don&#39;t want to read in the header row
-range &lt;- sheet$Range(sheet$Cells(r1+1,c1),sheet$Cells(r2,c2))
+# change the font size to 20
+dataCellFont[[&quot;Size&quot;]] &lt;- 20
 
-# get data
-df &lt;- range[[&#39;Value&#39;]] %&gt;%
-  map(function(x) {ifelse(x == &quot;NULL&quot;, NA, x)}) %&gt;%
-  map_dfc(~ as.data.frame(unlist(.), stringsAsFactors = FALSE))
+# make the text bold
+dataCellFont[[&quot;Bold&quot;]] &lt;- TRUE
 
-head(df)</code></pre>
-<pre><code>##                    unlist(.) unlist(.)1 unlist(.)2 unlist(.)3 unlist(.)4
-## 1             Premium Petrol    391.726   9457.211  13206.803   6377.691
-## 2             Regular Petrol  13332.860   38373.96  28472.584  16734.403
-## 3          Automotive Diesel  99497.579  47814.021  21607.902   8320.415
-## 4             Light Fuel Oil  16272.644          0   6007.899          0
-## 5   Heavy (residue) Fuel Oil -33022.470          0   2119.214          0
-## 6 Jet-A1 / Avtur / Av. kero.  13979.257          0  34208.210          0
-##   unlist(.)5 unlist(.)6 unlist(.)7 unlist(.)8 unlist(.)9 unlist(.)10
-## 1          0    -57.529         NA         NA         NA    6192.815
-## 2          0     92.609         NA         NA         NA   49620.464
-## 3          0     25.402     96.676         NA         NA   72716.520
-## 4          0         NA         NA         NA         NA    4882.538
-## 5          0         NA   3499.964         NA         NA          NA
-## 6          0         NA  23207.180         NA         NA   15299.322
-##   unlist(.)11 unlist(.)12 unlist(.)13 unlist(.)14 unlist(.)15 unlist(.)16
-## 1           0      69.000          NA    10358.34           0          NA
-## 2           0      -4.000          NA    13921.15           0          NA
-## 3           0     -34.000          NA    87846.03           0          NA
-## 4           0      67.840          NA    17330.17           0          NA
-## 5           0     -24.391          NA   -34378.83           0          NA
-## 6           0      14.515          NA     9666.45           0          NA</code></pre>
-<p>We could get really creative and read in the header data as well, but in this case there are a few cells that are merged, so this wouldn’t work here without unmerging those cells first. In this case it would be simpler to specify the column names explicitly.</p>
-<pre class="r"><code>header &lt;- c(&quot;fuel&quot;, &quot;openingStock&quot;, &quot;imports&quot;, &quot;refineryDeliveries&quot;, &quot;sales&quot;, &quot;purchases&quot;,
-            &quot;reblending&quot;, &quot;internationalTransport&quot;, &quot;elecGen&quot;, &quot;rerefining&quot;, &quot;otherSales&quot;,
-            &quot;exports&quot;, &quot;losses&quot;, &quot;ownUse&quot;, &quot;closingStock&quot;, &quot;errorCheck&quot;, &quot;notes&quot;)
+# change the font to be Arial
+dataCellFont[[&quot;Name&quot;]] &lt;- &#39;Arial&#39;
 
-colnames(df) &lt;- header
+# make the text Italic
+dataCellFont[[&quot;Italic&quot;]] &lt;- TRUE
 
-head(df)</code></pre>
-<pre><code>##                         fuel openingStock   imports refineryDeliveries
-## 1             Premium Petrol      391.726  9457.211          13206.803
-## 2             Regular Petrol    13332.860  38373.96          28472.584
-## 3          Automotive Diesel    99497.579 47814.021          21607.902
-## 4             Light Fuel Oil    16272.644         0           6007.899
-## 5   Heavy (residue) Fuel Oil   -33022.470         0           2119.214
-## 6 Jet-A1 / Avtur / Av. kero.    13979.257         0          34208.210
-##       sales purchases reblending internationalTransport elecGen rerefining
-## 1  6377.691         0    -57.529                     NA      NA         NA
-## 2 16734.403         0     92.609                     NA      NA         NA
-## 3  8320.415         0     25.402                 96.676      NA         NA
-## 4         0         0         NA                     NA      NA         NA
-## 5         0         0         NA               3499.964      NA         NA
-## 6         0         0         NA              23207.180      NA         NA
-##   otherSales exports  losses ownUse closingStock errorCheck notes
-## 1   6192.815       0  69.000     NA     10358.34          0    NA
-## 2  49620.464       0  -4.000     NA     13921.15          0    NA
-## 3  72716.520       0 -34.000     NA     87846.03          0    NA
-## 4   4882.538       0  67.840     NA     17330.17          0    NA
-## 5         NA       0 -24.391     NA    -34378.83          0    NA
-## 6  15299.322       0  14.515     NA      9666.45          0    NA</code></pre>
-<p>Now you can specify a particular range of cells to be read based on finding a value in a particular cell. This is still nothing too spectacular, and certainly nothing that can’t be done using another Excel reader like readxl combined with some judicious cleaning. In my next post I’ll cover writing data to a document and formatting that data.</p>
+# make the text red
+dataCellFont[[&quot;Color&quot;]] &lt;- 255</code></pre>
+<p>Assigning a colour is clearly not the easiest thing to control. Excel uses a base 10 number between 1 and around 17 million to represent the red, green, and blue channels. I’ll get into more detail about how we can simplify this soon.</p>
+<p>You might have noticed that we are assigning <code>range[[&quot;Font&quot;]]</code> to the variable <code>dataCellFont</code>. This is because if you try to chain properties together like <code>range[[&quot;Font&quot;]][[&quot;Size&quot;]]</code> you will sometimes get very unexpected results. I’ve found it is just simpler to explicitly assign the initial property to a variable and then access additional properties through that variable.</p>
+<p>This is all relatively simple stuff, but hopefully you are starting to get an idea of how useful this could be. Being able to have such fine control over the formatting options for any aspect of an Excel workbook means you can build a script that will generate a publication ready document as part of a reproducible workflow.</p>
+<p>In my next post I’ll examine a way to make specifying colours easier.</p>
 <p>Session info for this post.</p>
 <pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
 <pre><code>## R version 3.5.0 (2018-04-23)
@@ -373,6 +346,7 @@ head(df)</code></pre>
 ## [17] bookdown_0.7     bindrcpp_0.2.2   glue_1.2.0       evaluate_0.10.1 
 ## [21] rmarkdown_1.10   blogdown_0.8.1   stringi_1.1.7    compiler_3.5.0  
 ## [25] pillar_1.2.3     backports_1.1.2  pkgconfig_2.0.1</code></pre>
+</div>
 
               
             </div>
@@ -389,8 +363,6 @@ head(df)</code></pre>
 
   <a class="tag tag--primary tag--small" href="/tags/rdcomclient/">RDCOMClient</a>
 
-  <a class="tag tag--primary tag--small" href="/tags/reading-data/">reading data</a>
-
   <a class="tag tag--primary tag--small" href="/tags/r/">R</a>
 
                   </div>
@@ -404,7 +376,7 @@ head(df)</code></pre>
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" data-tooltip="RDCOMClient Part 4 - Writing data to Excel">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-5-extending-colour-formatting/" data-tooltip="RDCOMClient Part 5 - Extending colour formatting">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -412,7 +384,7 @@ head(df)</code></pre>
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-2/" data-tooltip="RDCOMClient Part 2 - UsedRange()">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-3-find/" data-tooltip="RDCOMClient Part 3 - Find()">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -430,19 +402,19 @@ head(df)</code></pre>
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-4-writing-data-to-excel/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-4-writing-data-to-excel/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-4-writing-data-to-excel/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -497,7 +469,7 @@ s.setAttribute('data-timestamp', +new Date());
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" data-tooltip="RDCOMClient Part 4 - Writing data to Excel">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-5-extending-colour-formatting/" data-tooltip="RDCOMClient Part 5 - Extending colour formatting">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -505,7 +477,7 @@ s.setAttribute('data-timestamp', +new Date());
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-2/" data-tooltip="RDCOMClient Part 2 - UsedRange()">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-3-find/" data-tooltip="RDCOMClient Part 3 - Find()">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -523,19 +495,19 @@ s.setAttribute('data-timestamp', +new Date());
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-4-writing-data-to-excel/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-4-writing-data-to-excel/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-4-writing-data-to-excel/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -565,19 +537,19 @@ s.setAttribute('data-timestamp', +new Date());
   <ul class="share-options">
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F10%2Frdcomclient-part-4-writing-data-to-excel%2F">
           <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F10%2Frdcomclient-part-4-writing-data-to-excel%2F">
           <i class="fa fa-twitter"></i><span>Share on Twitter</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F10%2Frdcomclient-part-4-writing-data-to-excel%2F">
           <i class="fa fa-google-plus"></i><span>Share on Google&#43;</span>
         </a>
       </li>
@@ -774,9 +746,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = '\/2018\/10\/rdcomclient-part-3-find\/';
+          this.page.url = '\/2018\/10\/rdcomclient-part-4-writing-data-to-excel\/';
           
-            this.page.identifier = '\/2018\/10\/rdcomclient-part-3-find\/'
+            this.page.identifier = '\/2018\/10\/rdcomclient-part-4-writing-data-to-excel\/'
           
         };
         (function() {

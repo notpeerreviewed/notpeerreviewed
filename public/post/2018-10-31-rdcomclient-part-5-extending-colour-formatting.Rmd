@@ -1,0 +1,152 @@
+---
+title: RDCOMClient Part 5 - Extending colour formatting
+author: Jeff Lean
+date: '2018-10-31'
+slug: rdcomclient-part-5-extending-colour-formatting
+categories:
+  - Excel
+  - R
+  - RDCOMClient
+tags:
+  - Excel
+  - R
+  - RDCOMClient
+---
+
+```{r, eval=TRUE, echo=FALSE, messages = FALSE}
+library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex <- COMCreate("Excel.Application")
+ex[["Visible"]] <- TRUE
+
+Workbook <- ex[["workbooks"]]
+
+current_file <- Workbook$Add()
+
+sheet <- current_file$Worksheets(1)
+
+range <- sheet$Range("A1")
+
+myString <- "Hello World!"
+
+range[["Value"]] <- myString
+
+dataCellFont <- range[["Font"]]
+
+dataCellFont[["Size"]] <- 20
+
+dataCellFont[["Bold"]] <- TRUE
+
+```
+
+In my last post I introduced creating a new Excel workbook, writing data into that workbook, and applying some formatting to that data. In this post I'll cover the following:
+
+* Simplifying the colour specification
+* Saving your workbook
+
+## Simplifying colour specification
+
+As we saw in the previous post, it is a bit difficult telling Excel what colour to use for something. You need to know the exact numeric reference for a colour and unless you have identified the colour through trial and error previously, it's just not something you want to be doing.
+
+Luckily for us this problem has been largely solved already. We will need to introduce another package here called [gplots](https://www.rdocumentation.org/packages/gplots/versions/3.0.1). This package includes a function called `col2hex`. This function takes a colour string like "red", and outputs the respective hexadecimal code. 
+
+According to [this link](https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf), R has 657 built-in colour names. We can just pass the desired colour name to the `col2hex` function and get our hex code back.
+
+About now some of you are probably asking what good is a hexadecimal code since we can't pass it directly to Excel. Excellent question, well presented! When I first started playing around with this problem, I found the `strtoi` function from base R that converts strings to integers with a specified base. I thought I could just pass the hex code to this function and I'd easily get a number back. Well as it happens, you do get a number back - it's just not the right number if you pass the whole hex code to the function.
+
+Here's what I tried first. I'll assume that you've got your Excel document open using the method we used in the previous post.
+
+```{r, eval=TRUE, message = FALSE, warning=FALSE}
+suppressMessages(library(gplots))
+library(stringr)
+
+# try converting a known colour to a hexadecimal value
+col2hex('red') # should give "#FF0000"
+
+# try converting that hexadecimal string to a decimal number
+strtoi("FF0000") 
+
+# that didn't work because we didn't specify the base
+strtoi("FF0000", base = 16) 
+
+```
+
+Since I knew that the colour red is represented by the hex code "#FF0000" I expected to see the strtoi() function return a value of 255, since I also knew that this is the number that red should correspond to. Clearly 16711680 was not going to give me the result I wanted. After a few hours looking around online I found [this post](https://stackoverflow.com/questions/8468855/convert-a-rgb-colour-value-to-decimal) that described how the hex codes represent the red, green and blue channels of a colour.
+
+After finding that little gem, I just wrote a simple little function that takes a colour name as the argument. This function converts that string to a hexadecimal code, converts the respective colour channels to decimal numbers, and then combines them in the necessary way to arrive at a decimal number we can pass to Excel through the `[["Color"]]` property.
+
+```{r, eval=TRUE, messages = FALSE}
+
+# create our function that will be used to calculate the decimal
+# representation of a colour
+colNum <- function(colour = "black"){
+  
+  # catch error if a value other than a recognised colour is entered
+  if(!(colour %in% colours())){
+    stop("Please enter one of the R specified colours as a string.\n
+         The R colours can be found by typing colours().")
+  }
+  
+  # first convert colour to hexadecimal code and strip out the hashtag
+  value <- col2hex(colour) %>%
+    str_replace("#", "")
+  
+  # get the component colours
+  R <- str_sub(value, 1, 2) %>% strtoi(base = 16)
+  
+  G <- str_sub(value, 3, 4) %>% strtoi(base = 16)
+  
+  B <- str_sub(value, 5, 6) %>% strtoi(base = 16)
+  
+  # calculate the decimal resultant of the three colour channels
+  colour <- B * 65536 + G * 256 + R
+  
+  return(colour)
+}
+
+# now we can specify the colour of text in our target cell simply by 
+# passing a colour name to our function
+dataCellFont[["Color"]] <- colNum("magenta1")
+
+dataCellFont[["Color"]] <- colNum("springgreen2")
+
+dataCellFont[["Color"]] <- colNum("red")
+
+```
+
+
+## Saving your workbook
+
+Now that you've gone through all the effort to create your "Hello World!" document, you'll be wanting to save it so you can keep it.
+
+This is a simple matter of using the SaveAs method on the workbook object. Be sure to specify where you want to save your document by passing a path string as an argument. If you don't provide a path, the document will save in your current working directory. In order to make sure your document saves smoothly, you can include the command `ex[["DisplayAlerts"]] <- FALSE` before you save your document. This will prevent a popup message asking if you want to replace your document. It is important to remember to restore your DisplayAlerts property to TRUE at the end of your script.
+
+
+```{r, eval=TRUE, messages = FALSE}
+ex[["DisplayAlerts"]] <- FALSE
+current_file$SaveAs("D:\\notpeerreviewed\\data\\hello_world.xlsx")
+
+# close the current document
+current_file$Close(SaveChanges = TRUE)
+ex[["DisplayAlerts"]] <- TRUE
+
+# now we can quit Excel
+ex$Quit()
+```
+
+This post has been a bit more about understanding the underlying workings of how R deals with colours and how different colour codes work. In my next post I'll show how to write a more realistic example of data into a workbook.
+
+Session info for this post.
+```{r, eval=TRUE, message=FALSE}
+print(sessionInfo(), locale = FALSE)
+
+```
+
+
+
+
+
+
+

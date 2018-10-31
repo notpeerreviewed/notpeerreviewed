@@ -6,7 +6,11 @@ slug: introduction-to-rdcomclient
 tags:
 - RDCOMClient
 - Excel
-categories: []
+- R
+categories:
+- RDCOMClient
+- Excel
+- R
 ---
 
 For years I have been saying to myself - "I really should start a blog". Recently I stumbled across the [blogdown](https://bookdown.org/yihui/blogdown/) package and finally decided I had a simple enough tool to help me get started.

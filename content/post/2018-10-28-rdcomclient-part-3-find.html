@@ -7,16 +7,18 @@ categories:
   - RDCOMClient
   - Excel
   - Find()
+  - R
 tags:
   - Excel
   - RDCOMClient
   - reading data
+  - R
 ---
 
 
 
 <p>In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.</p>
-<p>If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let’s get our workspace up to the necessary point for this exercise.</p>
+<p>If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let’s get our workspace up to the necessary point for this exercise. You can download this spreadsheet from <a href="https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data">here</a>.</p>
 <pre class="r"><code>library(RDCOMClient)
 suppressMessages(library(dplyr))
 library(purrr)
@@ -40,7 +42,7 @@ sheet &lt;- current_file$Worksheets(&quot;Supply&quot;)</code></pre>
 <pre><code>## [1] 1</code></pre>
 <pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row() </code></pre>
 <pre><code>## [1] 6</code></pre>
-<p>Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.</p>
+<p>Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property. The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.</p>
 <pre class="r"><code>c1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()      ## first col
 c2 &lt;- sheet$UsedRange()$Find(&quot;Notes&quot;)$Column()          ## last col
 
@@ -49,6 +51,7 @@ r2 &lt;- sheet$UsedRange()$Find(&quot;Totals&quot;)$Row()            ## last row
 
 
 # create the range object using the cells we found above
+# we&#39;re using r1+1 because we don&#39;t want to read in the header row
 range &lt;- sheet$Range(sheet$Cells(r1+1,c1),sheet$Cells(r2,c2))
 
 # get data

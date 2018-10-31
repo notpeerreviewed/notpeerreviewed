@@ -6,10 +6,31 @@
     <description>Recent content on notpeerreviewed</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 31 Oct 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>RDCOMClient Part 5 - Extending colour formatting</title>
+      <link>/2018/10/rdcomclient-part-5-extending-colour-formatting/</link>
+      <pubDate>Wed, 31 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/rdcomclient-part-5-extending-colour-formatting/</guid>
+      <description>In my last post I introduced creating a new Excel workbook, writing data into that workbook, and applying some formatting to that data. In this post I’ll cover the following:
+Simplifying the colour specificationSaving your workbookSimplifying colour specificationAs we saw in the previous post, it is a bit difficult telling Excel what colour to use for something. You need to know the exact numeric reference for a colour and unless you have identified the colour through trial and error previously, it’s just not something you want to be doing.</description>
+    </item>
+    
+    <item>
+      <title>RDCOMClient Part 4 - Writing data to Excel</title>
+      <link>/2018/10/rdcomclient-part-4-writing-data-to-excel/</link>
+      <pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/10/rdcomclient-part-4-writing-data-to-excel/</guid>
+      <description>In the last few posts we’ve covered how to read data from Excel into R. In this post we’ll start looking at how to write data into Excel using RDCOMClient. Generally speaking, it is quite easy to write from R to Excel using this package, but there are a few key things to remember.
+In this post I’ll cover the following:
+creating a new Excel document from Rwriting data to a specified rangebasic formatting of your dataCreating a new Excel documentThis is no different to what we’ve done in the past few posts.</description>
+    </item>
     
     <item>
       <title>RDCOMClient Part 3 - Find()</title>

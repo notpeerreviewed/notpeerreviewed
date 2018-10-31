@@ -1,0 +1,122 @@
+---
+title: RDCOMClient Part 5 - Extending colour formatting
+author: Jeff Lean
+date: '2018-10-31'
+slug: rdcomclient-part-5-extending-colour-formatting
+categories:
+  - Excel
+  - R
+  - RDCOMClient
+tags:
+  - Excel
+  - R
+  - RDCOMClient
+---
+
+
+
+<p>In my last post I introduced creating a new Excel workbook, writing data into that workbook, and applying some formatting to that data. In this post I’ll cover the following:</p>
+<ul>
+<li>Simplifying the colour specification</li>
+<li>Saving your workbook</li>
+</ul>
+<div id="simplifying-colour-specification" class="section level2">
+<h2>Simplifying colour specification</h2>
+<p>As we saw in the previous post, it is a bit difficult telling Excel what colour to use for something. You need to know the exact numeric reference for a colour and unless you have identified the colour through trial and error previously, it’s just not something you want to be doing.</p>
+<p>Luckily for us this problem has been largely solved already. We will need to introduce another package here called <a href="https://www.rdocumentation.org/packages/gplots/versions/3.0.1">gplots</a>. This package includes a function called <code>col2hex</code>. This function takes a colour string like “red”, and outputs the respective hexadecimal code.</p>
+<p>According to <a href="https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf">this link</a>, R has 657 built-in colour names. We can just pass the desired colour name to the <code>col2hex</code> function and get our hex code back.</p>
+<p>About now some of you are probably asking what good is a hexadecimal code since we can’t pass it directly to Excel. Excellent question, well presented! When I first started playing around with this problem, I found the <code>strtoi</code> function from base R that converts strings to integers with a specified base. I thought I could just pass the hex code to this function and I’d easily get a number back. Well as it happens, you do get a number back - it’s just not the right number if you pass the whole hex code to the function.</p>
+<p>Here’s what I tried first. I’ll assume that you’ve got your Excel document open using the method we used in the previous post.</p>
+<pre class="r"><code>suppressMessages(library(gplots))
+library(stringr)
+
+# try converting a known colour to a hexadecimal value
+col2hex(&#39;red&#39;) # should give &quot;#FF0000&quot;</code></pre>
+<pre><code>## [1] &quot;#FF0000&quot;</code></pre>
+<pre class="r"><code># try converting that hexadecimal string to a decimal number
+strtoi(&quot;FF0000&quot;) </code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code># that didn&#39;t work because we didn&#39;t specify the base
+strtoi(&quot;FF0000&quot;, base = 16) </code></pre>
+<pre><code>## [1] 16711680</code></pre>
+<p>Since I knew that the colour red is represented by the hex code “#FF0000” I expected to see the strtoi() function return a value of 255, since I also knew that this is the number that red should correspond to. Clearly 16711680 was not going to give me the result I wanted. After a few hours looking around online I found <a href="https://stackoverflow.com/questions/8468855/convert-a-rgb-colour-value-to-decimal">this post</a> that described how the hex codes represent the red, green and blue channels of a colour.</p>
+<p>After finding that little gem, I just wrote a simple little function that takes a colour name as the argument. This function converts that string to a hexadecimal code, converts the respective colour channels to decimal numbers, and then combines them in the necessary way to arrive at a decimal number we can pass to Excel through the <code>[[&quot;Color&quot;]]</code> property.</p>
+<pre class="r"><code># create our function that will be used to calculate the decimal
+# representation of a colour
+colNum &lt;- function(colour = &quot;black&quot;){
+  
+  # catch error if a value other than a recognised colour is entered
+  if(!(colour %in% colours())){
+    stop(&quot;Please enter one of the R specified colours as a string.\n
+         The R colours can be found by typing colours().&quot;)
+  }
+  
+  # first convert colour to hexadecimal code and strip out the hashtag
+  value &lt;- col2hex(colour) %&gt;%
+    str_replace(&quot;#&quot;, &quot;&quot;)
+  
+  # get the component colours
+  R &lt;- str_sub(value, 1, 2) %&gt;% strtoi(base = 16)
+  
+  G &lt;- str_sub(value, 3, 4) %&gt;% strtoi(base = 16)
+  
+  B &lt;- str_sub(value, 5, 6) %&gt;% strtoi(base = 16)
+  
+  # calculate the decimal resultant of the three colour channels
+  colour &lt;- B * 65536 + G * 256 + R
+  
+  return(colour)
+}
+
+# now we can specify the colour of text in our target cell simply by 
+# passing a colour name to our function
+dataCellFont[[&quot;Color&quot;]] &lt;- colNum(&quot;magenta1&quot;)
+
+dataCellFont[[&quot;Color&quot;]] &lt;- colNum(&quot;springgreen2&quot;)
+
+dataCellFont[[&quot;Color&quot;]] &lt;- colNum(&quot;red&quot;)</code></pre>
+</div>
+<div id="saving-your-workbook" class="section level2">
+<h2>Saving your workbook</h2>
+<p>Now that you’ve gone through all the effort to create your “Hello World!” document, you’ll be wanting to save it so you can keep it.</p>
+<p>This is a simple matter of using the SaveAs method on the workbook object. Be sure to specify where you want to save your document by passing a path string as an argument. If you don’t provide a path, the document will save in your current working directory. In order to make sure your document saves smoothly, you can include the command <code>ex[[&quot;DisplayAlerts&quot;]] &lt;- FALSE</code> before you save your document. This will prevent a popup message asking if you want to replace your document. It is important to remember to restore your DisplayAlerts property to TRUE at the end of your script.</p>
+<pre class="r"><code>ex[[&quot;DisplayAlerts&quot;]] &lt;- FALSE
+current_file$SaveAs(&quot;D:\\notpeerreviewed\\data\\hello_world.xlsx&quot;)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># close the current document
+current_file$Close(SaveChanges = TRUE)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>ex[[&quot;DisplayAlerts&quot;]] &lt;- TRUE
+
+# now we can quit Excel
+ex$Quit()</code></pre>
+<pre><code>## NULL</code></pre>
+<p>This post has been a bit more about understanding the underlying workings of how R deals with colours and how different colour codes work. In my next post I’ll show how to write a more realistic example of data into a workbook.</p>
+<p>Session info for this post.</p>
+<pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
+<pre><code>## R version 3.5.0 (2018-04-23)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17134)
+## 
+## Matrix products: default
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] stringr_1.3.1      gplots_3.0.1       purrr_0.2.5       
+## [4] dplyr_0.7.5        RDCOMClient_0.93-0
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.12.17       knitr_1.20         bindr_0.1.1       
+##  [4] magrittr_1.5       tidyselect_0.2.4   R6_2.2.2          
+##  [7] rlang_0.2.1        caTools_1.17.1.1   tools_3.5.0       
+## [10] xfun_0.3           KernSmooth_2.23-15 gtools_3.8.1      
+## [13] htmltools_0.3.6    yaml_2.1.19        rprojroot_1.3-2   
+## [16] digest_0.6.15      assertthat_0.2.0   tibble_1.4.2      
+## [19] bookdown_0.7       bindrcpp_0.2.2     bitops_1.0-6      
+## [22] glue_1.2.0         evaluate_0.10.1    rmarkdown_1.10    
+## [25] blogdown_0.8.1     gdata_2.18.0       stringi_1.1.7     
+## [28] compiler_3.5.0     pillar_1.2.3       backports_1.1.2   
+## [31] pkgconfig_2.0.1</code></pre>
+</div>
