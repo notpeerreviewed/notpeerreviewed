@@ -1,0 +1,77 @@
+---
+title: RDCOMClient Part 7 - [["Value"]] vs [["Text"]]
+author: Jeff Lean
+date: '2018-11-03'
+slug: rdcomclient-part-7-gotchas-value-vs-text
+categories:
+  - Excel
+  - R
+  - RDCOMClient
+tags:
+  - Excel
+  - RDCOMClient
+  - R
+  - '[["Value"]]'
+  - $text()
+---
+
+This post will be a bit shorter than usual, but I thought it could be useful to highlight a potential 'gotcha' that could cause problems for newcomers to RDCOMClient.
+
+A Range object includes several properties, including Value and Text. What's the difference between between Value and Text? The [help page](https://docs.microsoft.com/en-us/office/vba/api/excel.range.text) explains things quite well. 
+
+Basically there's two differences. Firstly, if your specified Range object covers multiple cells, the Text property will only return the value in the first cell. Secondly, and this is far more important, if your specified Range includes a cell that has a number, then the Text property will return the value of the number as it is formatted in the cell.
+
+Let's clarify this with an example. Let's set up a working Excel workbook and place a few values in some cells.
+
+```{r, eval=TRUE, messages=FALSE}
+library(RDCOMClient)
+suppressMessages(library(dplyr))
+suppressMessages(library(gplots))
+
+# we've seen this code plenty of times now so I'll compress it a bit to save space
+ex <- COMCreate("Excel.Application")
+ex[["Visible"]] <- TRUE
+Workbook <- ex[["workbooks"]]
+current_file <- Workbook$Add()
+sheet <- current_file$Worksheets(1)
+
+# set up two ranges
+range1 <- sheet$Range("A1")
+range2 <- sheet$Range("B1")
+
+# place numbers in both ranges - we'll format these numbers in different ways
+range1[["Value"]] <- 123.4567
+range2[["Value"]] <- 123.4567
+
+# now we'll format the number in A1 to be a rounded whole number
+range1[["NumberFormat"]] <- "0"
+
+```
+
+Ok, now we have a situation that is pretty common in operational spreadsheets. We might have numbers that we have formatted to be rounded whole numbers to save space and make things a bit more human-readable. The number in cell A1 is still 123.4567, but we can only see 123. Let's see what happens when we use `[["Text"]]` and `[["Value"]]` to get the data from each cell.
+
+
+```{r, eval=TRUE}
+# first we will read the text from each cell
+range1[["Text"]]
+range2[["Text"]]
+
+```
+
+```{r, eval=TRUE}
+# now we will read the value from each cell
+range1[["Value"]]
+range2[["Value"]]
+
+```
+
+You can see two important things happening here. Firstly, and most importantly, when we use [["Text"]] we get the text that appears in each cell **as it is formatted**. Secondly, when we use [["Text"]], the data is returned as character strings regardless of whether they are numbers. This type mismatch is not a huge deal as we can easily coerce data to the correct form when we get it into R, but if you are expecting to get the entire number, complete with all decimal places, then you could be in for a bit of a shock.
+
+I suppose the lesson here is that is preferable to use the [["Value"]] property when you are retrieving numeric data from Excel.
+
+Session info for this post.
+```{r, eval=TRUE, message=FALSE}
+print(sessionInfo(), locale = FALSE)
+
+```
+

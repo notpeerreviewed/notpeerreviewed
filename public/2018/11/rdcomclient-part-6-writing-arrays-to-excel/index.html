@@ -1,5 +1,9 @@
 
 
+  
+    
+  
+
 
   
 
@@ -16,25 +20,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.44 with theme Tranquilpeak 0.4.3-BETA">
-    <title>Rdcomclient</title>
+    <title>RDCOMClient Part 6 - Writing arrays to Excel</title>
     <meta name="author" content="Jeff Lean">
     <meta name="keywords" content="">
 
     <link rel="icon" href="/favicon.png">
     
-      <link rel="alternate" type="application/rss+xml" title="RSS" href="/tags/rdcomclient/index.xml">
-    
 
     
-    <meta name="description" content="This blog is notpeerreviewed">
-    <meta property="og:description" content="This blog is notpeerreviewed">
+    <meta name="description" content="My last post covered a bit more detail on how to specify colours to be passed to Excel for formatting your data. This post I’ll get back to using RDCOMClient to write data into your Excel documents.
+Specifically I want to cover the following:
+writing arrays to a specified rangetype specificationwriting dates to ExcelWe already know how to open an existing Excel workbook, or create one from scratch.">
+    <meta property="og:description" content="My last post covered a bit more detail on how to specify colours to be passed to Excel for formatting your data. This post I’ll get back to using RDCOMClient to write data into your Excel documents.
+Specifically I want to cover the following:
+writing arrays to a specified rangetype specificationwriting dates to ExcelWe already know how to open an existing Excel workbook, or create one from scratch.">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="Rdcomclient">
-    <meta property="og:url" content="/tags/rdcomclient/">
+    <meta property="og:title" content="RDCOMClient Part 6 - Writing arrays to Excel">
+    <meta property="og:url" content="/2018/11/rdcomclient-part-6-writing-arrays-to-excel/">
     <meta property="og:site_name" content="notpeerreviewed">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="notpeerreviewed">
-    <meta name="twitter:description" content="This blog is notpeerreviewed">
+    <meta name="twitter:description" content="My last post covered a bit more detail on how to specify colours to be passed to Excel for formatting your data. This post I’ll get back to using RDCOMClient to write data into your Excel documents.
+Specifically I want to cover the following:
+writing arrays to a specified rangetype specificationwriting dates to ExcelWe already know how to open an existing Excel workbook, or create one from scratch.">
     
     
 
@@ -69,7 +77,7 @@
 
   <body>
     <div id="blog">
-      <header id="header" data-behavior="1">
+      <header id="header" data-behavior="4">
   <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
   <div class="header-title">
     <a class="header-title-link" href="/">notpeerreviewed</a>
@@ -89,7 +97,7 @@
   
 </header>
 
-      <nav id="sidebar" data-behavior="1">
+      <nav id="sidebar" data-behavior="4">
   <div class="sidebar-container">
     
       <div class="sidebar-profile">
@@ -208,99 +216,21 @@
 </nav>
 
       
-        
 
-      
-      <div id="main" data-behavior="1"
+      <div id="main" data-behavior="4"
         class="
                hasCoverMetaIn
                ">
-        
-          <section class="postShorten-group main-content-wrap">
-            
-            
-              
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
   
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/11/rdcomclient-part-7-gotchas-value-vs-text/">
-          RDCOMClient Part 7 - [[&#34;Value&#34;]] vs [[&#34;Text&#34;]]
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-11-03T00:00:00Z">
-        
-  November 3, 2018
-
-      </time>
-    
-    
+    <h1 class="post-title" itemprop="headline">
+      RDCOMClient Part 6 - Writing arrays to Excel
+    </h1>
   
   
-    <span>in</span>
-    
-      <a class="category-link" href="/categories/excel">Excel</a>, 
-    
-      <a class="category-link" href="/categories/r">R</a>, 
-    
-      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>
-    
-  
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      This post will be a bit shorter than usual, but I thought it could be useful to highlight a potential ‘gotcha’ that could cause problems for newcomers to RDCOMClient.
-A Range object includes several properties, including Value and Text. What’s the difference between between Value and Text? The help page explains things quite well.
-Basically there’s two differences. Firstly, if your specified Range object covers multiple cells, the Text property will only return the value in the first cell.
-      <p>
-        <a href="/2018/11/rdcomclient-part-7-gotchas-value-vs-text/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-            
-              
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/11/rdcomclient-part-6-writing-arrays-to-excel/">
-          RDCOMClient Part 6 - Writing arrays to Excel
-        </a>
-      </h1>
-      
   <div class="postShorten-meta post-meta">
     
       <time itemprop="datePublished" datetime="2018-11-01T00:00:00Z">
@@ -324,323 +254,189 @@ Basically there’s two differences. Firstly, if your specified Range object cov
 
   </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      My last post covered a bit more detail on how to specify colours to be passed to Excel for formatting your data. This post I’ll get back to using RDCOMClient to write data into your Excel documents.
-Specifically I want to cover the following:
-writing arrays to a specified rangetype specificationwriting dates to ExcelWe already know how to open an existing Excel workbook, or create one from scratch.
-      <p>
-        <a href="/2018/11/rdcomclient-part-6-writing-arrays-to-excel/" class="postShorten-excerpt_link link">Continue reading</a>
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>My last post covered a bit more detail on how to specify colours to be passed to Excel for formatting your data. This post I’ll get back to using RDCOMClient to write data into your Excel documents.</p>
+<p>Specifically I want to cover the following:</p>
+<ul>
+<li>writing arrays to a specified range</li>
+<li>type specification</li>
+<li>writing dates to Excel</li>
+</ul>
+<p>We already know how to open an existing Excel workbook, or create one from scratch. So let’s get our Excel document open and ready for writing some data.</p>
+<pre class="r"><code>library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+ex[[&quot;Visible&quot;]] &lt;- TRUE
+
+Workbook &lt;- ex[[&quot;workbooks&quot;]]
+
+current_file &lt;- Workbook$Add()
+
+sheet &lt;- current_file$Worksheets(1)</code></pre>
+<p>Now that we have our document ready, we’ll need some data to experiement with. I’m going to create a simple dataframe with a column of letters, a column of numbers, and a column of dates. You can see that the column types are going to be character, integer, and Date.</p>
+<pre class="r"><code># first, create a dataframe with some basic data
+test &lt;- data.frame(
+  characters = letters[1:10],
+  numbers = seq(1:10),
+  dates = as.Date(1:10,
+                  origin=Sys.Date()),
+  stringsAsFactors = F)
+
+str(test)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    10 obs. of  3 variables:
+##  $ characters: chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
+##  $ numbers   : int  1 2 3 4 5 6 7 8 9 10
+##  $ dates     : Date, format: &quot;2018-11-04&quot; &quot;2018-11-05&quot; ...</code></pre>
+<p>RDCOMClient has a function called asCOMArray() that allows you to directly write an array to Excel. At first, this seems like a really convenient way to write data, and it can be if you are just writing simple data types like character, or numeric data. It becomes a bit of a problem if you are writing dates. Let’s have a look at what happens when we write the entire test dataframe to Excel.</p>
+<pre class="r"><code>range &lt;- sheet$Range(&quot;A1:C10&quot;)
+
+range[[&quot;Value&quot;]] &lt;- asCOMArray(test)</code></pre>
+<p>If you have a look at your worksheet you’ll see that all your data is there, but it has been written as general format. This is fine if you just want to present it in a table, but if you want to do anything with it, like filter by date range, you can’t because Excel doesn’t think that third column is a date.</p>
+<p>One solution is to convert your date column to numeric and modify it so we can tell Excel to format that column as a date. We need to use the [[“NumberFormat”]] property of the range to change the numeric date, to a more common date format.</p>
+<pre class="r"><code># first we clear the initial range
+range$Clear()
+
+# now we&#39;ll reset our target range to be A1 to A10 for this example
+range &lt;- sheet$Range(&quot;A1:A10&quot;)
+
+# we need to add 25569 to our numeric date because Excel sets the origin in a particular way
+numericDates &lt;- as.Date(1:10, origin=Sys.Date()) %&gt;% as.numeric() + 25569
+
+# now write our vector of numeric dates into the range A1:A10
+range[[&quot;Value&quot;]] &lt;- asCOMArray(numericDates)
+range[[&quot;NumberFormat&quot;]] &lt;- &quot;d/mm/yyyy&quot;</code></pre>
+<p>I thought I might explain the syntax used in the numericDates variable at this point. You’re all probably familiar with the piping syntax from the magrittr package. This is used widely throughout the tidyverse family of package and means you can string together function calls instead of nesting them. I find this syntax makes things much easier to debug as you can just highlight the sections of code you want to run and test the output one piece at a time.</p>
+<p>The numericDates code initially creates a vector of 10 dates starting from the current system date. The <code>%&gt;%</code> operator can be read as “then”. So this line of code can be read as “create a vector of ten dates”, then “convert those dates to numbers”, then “add 25569 to each date”. When you add a single number to a vector, that number gets added to each element of the vector. It’s just a nice shorthand way of writing things.</p>
+<p>Anyway, now you know how to add dates to Excel in such a way that you can perform date operations in the resulting Excel document.</p>
+<p>Session info for this post.</p>
+<pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
+<pre><code>## R version 3.5.0 (2018-04-23)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17134)
+## 
+## Matrix products: default
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## loaded via a namespace (and not attached):
+##  [1] compiler_3.5.0  backports_1.1.2 bookdown_0.7    magrittr_1.5   
+##  [5] rprojroot_1.3-2 tools_3.5.0     htmltools_0.3.6 yaml_2.1.19    
+##  [9] Rcpp_0.12.17    stringi_1.1.7   rmarkdown_1.10  blogdown_0.8.1 
+## [13] knitr_1.20      stringr_1.3.1   digest_0.6.15   xfun_0.3       
+## [17] evaluate_0.10.1</code></pre>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="/tags/excel/">Excel</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/r/">R</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/rdcomclient/">RDCOMClient</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/11/rdcomclient-part-7-gotchas-value-vs-text/" data-tooltip="RDCOMClient Part 7 - [[&#34;Value&#34;]] vs [[&#34;Text&#34;]]">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-5-extending-colour-formatting/" data-tooltip="RDCOMClient Part 5 - Extending colour formatting">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
-      </p>
-    </div>
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/11/rdcomclient-part-6-writing-arrays-to-excel/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/11/rdcomclient-part-6-writing-arrays-to-excel/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/11/rdcomclient-part-6-writing-arrays-to-excel/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
   </div>
-  
-</article>
+
 
             
               
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/10/rdcomclient-part-5-extending-colour-formatting/">
-          RDCOMClient Part 5 - Extending colour formatting
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-10-31T00:00:00Z">
-        
-  October 31, 2018
-
-      </time>
-    
-    
-  
-  
-    <span>in</span>
-    
-      <a class="category-link" href="/categories/excel">Excel</a>, 
-    
-      <a class="category-link" href="/categories/r">R</a>, 
-    
-      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>
-    
-  
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      In my last post I introduced creating a new Excel workbook, writing data into that workbook, and applying some formatting to that data. In this post I’ll cover the following:
-Simplifying the colour specificationSaving your workbookSimplifying colour specificationAs we saw in the previous post, it is a bit difficult telling Excel what colour to use for something. You need to know the exact numeric reference for a colour and unless you have identified the colour through trial and error previously, it’s just not something you want to be doing.
-      <p>
-        <a href="/2018/10/rdcomclient-part-5-extending-colour-formatting/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-            
+                <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://notpeerreviewed.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
               
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/">
-          RDCOMClient Part 4 - Writing data to Excel
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-10-30T00:00:00Z">
-        
-  October 30, 2018
-
-      </time>
-    
-    
-  
-  
-    <span>in</span>
-    
-      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>, 
-    
-      <a class="category-link" href="/categories/excel">Excel</a>, 
-    
-      <a class="category-link" href="/categories/r">R</a>
-    
-  
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      In the last few posts we’ve covered how to read data from Excel into R. In this post we’ll start looking at how to write data into Excel using RDCOMClient. Generally speaking, it is quite easy to write from R to Excel using this package, but there are a few key things to remember.
-In this post I’ll cover the following:
-creating a new Excel document from Rwriting data to a specified rangebasic formatting of your dataCreating a new Excel documentThis is no different to what we’ve done in the past few posts.
-      <p>
-        <a href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
             
-              
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/10/rdcomclient-part-3-find/">
-          RDCOMClient Part 3 - Find()
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-10-28T00:00:00Z">
-        
-  October 28, 2018
-
-      </time>
-    
-    
-  
-  
-    <span>in</span>
-    
-      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>, 
-    
-      <a class="category-link" href="/categories/excel">Excel</a>, 
-    
-      <a class="category-link" href="/categories/find">Find()</a>, 
-    
-      <a class="category-link" href="/categories/r">R</a>
-    
-  
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.
-      <p>
-        <a href="/2018/10/rdcomclient-part-3-find/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-            
-              
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/10/rdcomclient-part-2/">
-          RDCOMClient Part 2 - UsedRange()
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-10-27T00:00:00Z">
-        
-  October 27, 2018
-
-      </time>
-    
-    
-  
-  
-    <span>in</span>
-    
-      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>, 
-    
-      <a class="category-link" href="/categories/excel">Excel</a>, 
-    
-      <a class="category-link" href="/categories/r">R</a>
-    
-  
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      In my last post I covered how to open Excel and read some basic data. In this post I’m going to look at the UsedRange method.
-Firstly, I want to go through how to find these methods. The RDCOMClient package makes mention of the package SWinTypeLibs. This package is supposed to allow access to the list of all available methods and properties from a particular object. I have yet to be able to get this package to work on my machine so I have resorted to using the Object browser from the Excel VBA interface to identify methods and properties.
-      <p>
-        <a href="/2018/10/rdcomclient-part-2/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-            
-              
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="/2018/10/introduction-to-rdcomclient/">
-          Introduction to RDCOMClient
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-10-22T00:00:00Z">
-        
-  October 22, 2018
-
-      </time>
-    
-    
-  
-  
-    <span>in</span>
-    
-      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>, 
-    
-      <a class="category-link" href="/categories/excel">Excel</a>, 
-    
-      <a class="category-link" href="/categories/r">R</a>
-    
-  
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      For years I have been saying to myself - “I really should start a blog”. Recently I stumbled across the blogdown package and finally decided I had a simple enough tool to help me get started.
-One Saturday night later and I am up and running with a functional blog. Fast forward a few months and here we are. I’ve decided that the best topic for me to write about first is the RDCOMClient package.
-      <p>
-        <a href="/2018/10/introduction-to-rdcomclient/" class="postShorten-excerpt_link link">Continue reading</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-            
-            
-
-          </section>
-        
+          </div>
+        </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
     &copy; 2018 Jeff Lean. All Rights Reserved
@@ -648,6 +444,102 @@ One Saturday night later and I am up and running with a functional blog. Fast fo
 </footer>
 
       </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/11/rdcomclient-part-7-gotchas-value-vs-text/" data-tooltip="RDCOMClient Part 7 - [[&#34;Value&#34;]] vs [[&#34;Text&#34;]]">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-5-extending-colour-formatting/" data-tooltip="RDCOMClient Part 5 - Extending colour formatting">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/11/rdcomclient-part-6-writing-arrays-to-excel/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/11/rdcomclient-part-6-writing-arrays-to-excel/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/11/rdcomclient-part-6-writing-arrays-to-excel/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F11%2Frdcomclient-part-6-writing-arrays-to-excel%2F">
+          <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F11%2Frdcomclient-part-6-writing-arrays-to-excel%2F">
+          <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F11%2Frdcomclient-part-6-writing-arrays-to-excel%2F">
+          <i class="fa fa-google-plus"></i><span>Share on Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
     
     <div id="about">
@@ -870,6 +762,32 @@ $(document).ready(function() {
 });
 </script>
 
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = '\/2018\/11\/rdcomclient-part-6-writing-arrays-to-excel\/';
+          
+            this.page.identifier = '\/2018\/11\/rdcomclient-part-6-writing-arrays-to-excel\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'notpeerreviewed';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
 
 
 

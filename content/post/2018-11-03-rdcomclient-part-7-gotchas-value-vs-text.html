@@ -1,0 +1,83 @@
+---
+title: RDCOMClient Part 7 - [["Value"]] vs [["Text"]]
+author: Jeff Lean
+date: '2018-11-03'
+slug: rdcomclient-part-7-gotchas-value-vs-text
+categories:
+  - Excel
+  - R
+  - RDCOMClient
+tags:
+  - Excel
+  - RDCOMClient
+  - R
+  - '[["Value"]]'
+  - $text()
+---
+
+
+
+<p>This post will be a bit shorter than usual, but I thought it could be useful to highlight a potential ‘gotcha’ that could cause problems for newcomers to RDCOMClient.</p>
+<p>A Range object includes several properties, including Value and Text. What’s the difference between between Value and Text? The <a href="https://docs.microsoft.com/en-us/office/vba/api/excel.range.text">help page</a> explains things quite well.</p>
+<p>Basically there’s two differences. Firstly, if your specified Range object covers multiple cells, the Text property will only return the value in the first cell. Secondly, and this is far more important, if your specified Range includes a cell that has a number, then the Text property will return the value of the number as it is formatted in the cell.</p>
+<p>Let’s clarify this with an example. Let’s set up a working Excel workbook and place a few values in some cells.</p>
+<pre class="r"><code>library(RDCOMClient)
+suppressMessages(library(dplyr))
+suppressMessages(library(gplots))</code></pre>
+<pre><code>## Warning: package &#39;gplots&#39; was built under R version 3.5.1</code></pre>
+<pre class="r"><code># we&#39;ve seen this code plenty of times now so I&#39;ll compress it a bit to save space
+ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+ex[[&quot;Visible&quot;]] &lt;- TRUE
+Workbook &lt;- ex[[&quot;workbooks&quot;]]
+current_file &lt;- Workbook$Add()
+sheet &lt;- current_file$Worksheets(1)
+
+# set up two ranges
+range1 &lt;- sheet$Range(&quot;A1&quot;)
+range2 &lt;- sheet$Range(&quot;B1&quot;)
+
+# place numbers in both ranges - we&#39;ll format these numbers in different ways
+range1[[&quot;Value&quot;]] &lt;- 123.4567
+range2[[&quot;Value&quot;]] &lt;- 123.4567
+
+# now we&#39;ll format the number in A1 to be a rounded whole number
+range1[[&quot;NumberFormat&quot;]] &lt;- &quot;0&quot;</code></pre>
+<p>Ok, now we have a situation that is pretty common in operational spreadsheets. We might have numbers that we have formatted to be rounded whole numbers to save space and make things a bit more human-readable. The number in cell A1 is still 123.4567, but we can only see 123. Let’s see what happens when we use <code>[[&quot;Text&quot;]]</code> and <code>[[&quot;Value&quot;]]</code> to get the data from each cell.</p>
+<pre class="r"><code># first we will read the text from each cell
+range1[[&quot;Text&quot;]]</code></pre>
+<pre><code>## [1] &quot;123&quot;</code></pre>
+<pre class="r"><code>range2[[&quot;Text&quot;]]</code></pre>
+<pre><code>## [1] &quot;123.4567&quot;</code></pre>
+<pre class="r"><code># now we will read the value from each cell
+range1[[&quot;Value&quot;]]</code></pre>
+<pre><code>## [1] 123.4567</code></pre>
+<pre class="r"><code>range2[[&quot;Value&quot;]]</code></pre>
+<pre><code>## [1] 123.4567</code></pre>
+<p>You can see two important things happening here. Firstly, and most importantly, when we use [[“Text”]] we get the text that appears in each cell <strong>as it is formatted</strong>. Secondly, when we use [[“Text”]], the data is returned as character strings regardless of whether they are numbers. This type mismatch is not a huge deal as we can easily coerce data to the correct form when we get it into R, but if you are expecting to get the entire number, complete with all decimal places, then you could be in for a bit of a shock.</p>
+<p>I suppose the lesson here is that is preferable to use the [[“Value”]] property when you are retrieving numeric data from Excel.</p>
+<p>Session info for this post.</p>
+<pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
+<pre><code>## R version 3.5.0 (2018-04-23)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17134)
+## 
+## Matrix products: default
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] gplots_3.0.1       dplyr_0.7.5        RDCOMClient_0.93-0
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_0.12.17       knitr_1.20         bindr_0.1.1       
+##  [4] magrittr_1.5       tidyselect_0.2.4   R6_2.2.2          
+##  [7] rlang_0.2.1        stringr_1.3.1      caTools_1.17.1.1  
+## [10] tools_3.5.0        xfun_0.3           KernSmooth_2.23-15
+## [13] gtools_3.8.1       htmltools_0.3.6    yaml_2.1.19       
+## [16] rprojroot_1.3-2    digest_0.6.15      assertthat_0.2.0  
+## [19] tibble_1.4.2       bookdown_0.7       bindrcpp_0.2.2    
+## [22] purrr_0.2.5        bitops_1.0-6       glue_1.2.0        
+## [25] evaluate_0.10.1    rmarkdown_1.10     blogdown_0.8.1    
+## [28] gdata_2.18.0       stringi_1.1.7      compiler_3.5.0    
+## [31] pillar_1.2.3       backports_1.1.2    pkgconfig_2.0.1</code></pre>

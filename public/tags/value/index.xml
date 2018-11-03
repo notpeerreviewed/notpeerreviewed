@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Value on notpeerreviewed</title>
+    <link>/tags/value/</link>
+    <description>Recent content in Value on notpeerreviewed</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 03 Nov 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/value/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>RDCOMClient Part 7 - [[&#34;Value&#34;]] vs [[&#34;Text&#34;]]</title>
+      <link>/2018/11/rdcomclient-part-7-gotchas-value-vs-text/</link>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/rdcomclient-part-7-gotchas-value-vs-text/</guid>
+      <description>This post will be a bit shorter than usual, but I thought it could be useful to highlight a potential ‘gotcha’ that could cause problems for newcomers to RDCOMClient.
+A Range object includes several properties, including Value and Text. What’s the difference between between Value and Text? The help page explains things quite well.
+Basically there’s two differences. Firstly, if your specified Range object covers multiple cells, the Text property will only return the value in the first cell.</description>
+    </item>
+    
+  </channel>
+</rss>

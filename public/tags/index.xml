@@ -6,7 +6,7 @@
     <description>Recent content in Tags on notpeerreviewed</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 31 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 03 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>Excel</title>
       <link>/tags/excel/</link>
-      <pubDate>Wed, 31 Oct 2018 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/excel/</guid>
       <description></description>
@@ -23,7 +23,7 @@
     <item>
       <title>R</title>
       <link>/tags/r/</link>
-      <pubDate>Wed, 31 Oct 2018 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/r/</guid>
       <description></description>
@@ -32,7 +32,7 @@
     <item>
       <title>Rdcomclient</title>
       <link>/tags/rdcomclient/</link>
-      <pubDate>Wed, 31 Oct 2018 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/rdcomclient/</guid>
       <description></description>
@@ -44,6 +44,24 @@
       <pubDate>Sun, 28 Oct 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/reading-data/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Text</title>
+      <link>/tags/text/</link>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/text/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Value</title>
+      <link>/tags/value/</link>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/value/</guid>
       <description></description>
     </item>
     

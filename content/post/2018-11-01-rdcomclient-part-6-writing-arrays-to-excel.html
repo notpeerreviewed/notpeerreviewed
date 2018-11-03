@@ -1,0 +1,89 @@
+---
+title: RDCOMClient Part 6 - Writing arrays to Excel
+author: Jeff Lean
+date: '2018-11-01'
+slug: rdcomclient-part-6-writing-arrays-to-excel
+categories:
+  - Excel
+  - R
+  - RDCOMClient
+tags:
+  - Excel
+  - R
+  - RDCOMClient
+---
+
+
+
+<p>My last post covered a bit more detail on how to specify colours to be passed to Excel for formatting your data. This post I’ll get back to using RDCOMClient to write data into your Excel documents.</p>
+<p>Specifically I want to cover the following:</p>
+<ul>
+<li>writing arrays to a specified range</li>
+<li>type specification</li>
+<li>writing dates to Excel</li>
+</ul>
+<p>We already know how to open an existing Excel workbook, or create one from scratch. So let’s get our Excel document open and ready for writing some data.</p>
+<pre class="r"><code>library(RDCOMClient)
+suppressMessages(library(dplyr))
+library(purrr)
+
+ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+ex[[&quot;Visible&quot;]] &lt;- TRUE
+
+Workbook &lt;- ex[[&quot;workbooks&quot;]]
+
+current_file &lt;- Workbook$Add()
+
+sheet &lt;- current_file$Worksheets(1)</code></pre>
+<p>Now that we have our document ready, we’ll need some data to experiement with. I’m going to create a simple dataframe with a column of letters, a column of numbers, and a column of dates. You can see that the column types are going to be character, integer, and Date.</p>
+<pre class="r"><code># first, create a dataframe with some basic data
+test &lt;- data.frame(
+  characters = letters[1:10],
+  numbers = seq(1:10),
+  dates = as.Date(1:10,
+                  origin=Sys.Date()),
+  stringsAsFactors = F)
+
+str(test)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    10 obs. of  3 variables:
+##  $ characters: chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
+##  $ numbers   : int  1 2 3 4 5 6 7 8 9 10
+##  $ dates     : Date, format: &quot;2018-11-04&quot; &quot;2018-11-05&quot; ...</code></pre>
+<p>RDCOMClient has a function called asCOMArray() that allows you to directly write an array to Excel. At first, this seems like a really convenient way to write data, and it can be if you are just writing simple data types like character, or numeric data. It becomes a bit of a problem if you are writing dates. Let’s have a look at what happens when we write the entire test dataframe to Excel.</p>
+<pre class="r"><code>range &lt;- sheet$Range(&quot;A1:C10&quot;)
+
+range[[&quot;Value&quot;]] &lt;- asCOMArray(test)</code></pre>
+<p>If you have a look at your worksheet you’ll see that all your data is there, but it has been written as general format. This is fine if you just want to present it in a table, but if you want to do anything with it, like filter by date range, you can’t because Excel doesn’t think that third column is a date.</p>
+<p>One solution is to convert your date column to numeric and modify it so we can tell Excel to format that column as a date. We need to use the [[“NumberFormat”]] property of the range to change the numeric date, to a more common date format.</p>
+<pre class="r"><code># first we clear the initial range
+range$Clear()
+
+# now we&#39;ll reset our target range to be A1 to A10 for this example
+range &lt;- sheet$Range(&quot;A1:A10&quot;)
+
+# we need to add 25569 to our numeric date because Excel sets the origin in a particular way
+numericDates &lt;- as.Date(1:10, origin=Sys.Date()) %&gt;% as.numeric() + 25569
+
+# now write our vector of numeric dates into the range A1:A10
+range[[&quot;Value&quot;]] &lt;- asCOMArray(numericDates)
+range[[&quot;NumberFormat&quot;]] &lt;- &quot;d/mm/yyyy&quot;</code></pre>
+<p>I thought I might explain the syntax used in the numericDates variable at this point. You’re all probably familiar with the piping syntax from the magrittr package. This is used widely throughout the tidyverse family of package and means you can string together function calls instead of nesting them. I find this syntax makes things much easier to debug as you can just highlight the sections of code you want to run and test the output one piece at a time.</p>
+<p>The numericDates code initially creates a vector of 10 dates starting from the current system date. The <code>%&gt;%</code> operator can be read as “then”. So this line of code can be read as “create a vector of ten dates”, then “convert those dates to numbers”, then “add 25569 to each date”. When you add a single number to a vector, that number gets added to each element of the vector. It’s just a nice shorthand way of writing things.</p>
+<p>Anyway, now you know how to add dates to Excel in such a way that you can perform date operations in the resulting Excel document.</p>
+<p>Session info for this post.</p>
+<pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
+<pre><code>## R version 3.5.0 (2018-04-23)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17134)
+## 
+## Matrix products: default
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## loaded via a namespace (and not attached):
+##  [1] compiler_3.5.0  backports_1.1.2 bookdown_0.7    magrittr_1.5   
+##  [5] rprojroot_1.3-2 tools_3.5.0     htmltools_0.3.6 yaml_2.1.19    
+##  [9] Rcpp_0.12.17    stringi_1.1.7   rmarkdown_1.10  blogdown_0.8.1 
+## [13] knitr_1.20      stringr_1.3.1   digest_0.6.15   xfun_0.3       
+## [17] evaluate_0.10.1</code></pre>

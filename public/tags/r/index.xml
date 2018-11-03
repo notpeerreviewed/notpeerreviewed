@@ -6,10 +6,32 @@
     <description>Recent content in R on notpeerreviewed</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 31 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 03 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>RDCOMClient Part 7 - [[&#34;Value&#34;]] vs [[&#34;Text&#34;]]</title>
+      <link>/2018/11/rdcomclient-part-7-gotchas-value-vs-text/</link>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/rdcomclient-part-7-gotchas-value-vs-text/</guid>
+      <description>This post will be a bit shorter than usual, but I thought it could be useful to highlight a potential ‘gotcha’ that could cause problems for newcomers to RDCOMClient.
+A Range object includes several properties, including Value and Text. What’s the difference between between Value and Text? The help page explains things quite well.
+Basically there’s two differences. Firstly, if your specified Range object covers multiple cells, the Text property will only return the value in the first cell.</description>
+    </item>
+    
+    <item>
+      <title>RDCOMClient Part 6 - Writing arrays to Excel</title>
+      <link>/2018/11/rdcomclient-part-6-writing-arrays-to-excel/</link>
+      <pubDate>Thu, 01 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/rdcomclient-part-6-writing-arrays-to-excel/</guid>
+      <description>My last post covered a bit more detail on how to specify colours to be passed to Excel for formatting your data. This post I’ll get back to using RDCOMClient to write data into your Excel documents.
+Specifically I want to cover the following:
+writing arrays to a specified rangetype specificationwriting dates to ExcelWe already know how to open an existing Excel workbook, or create one from scratch.</description>
+    </item>
     
     <item>
       <title>RDCOMClient Part 5 - Extending colour formatting</title>
