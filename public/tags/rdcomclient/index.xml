@@ -23,6 +23,16 @@ Basically there’s two differences. Firstly, if your specified Range object cov
     </item>
     
     <item>
+      <title>RDCOMClient Part 8 - Building a Pivot Table</title>
+      <link>/2018/11/rdcomclient-part-8-building-a-pivot-table/</link>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/rdcomclient-part-8-building-a-pivot-table/</guid>
+      <description>So far in this series we’ve covered a fair bit of the necessary basics for using RDCOMClient. This post will be a bit more detailed and will show how we can build a Pivot Table from scratch. I’m going to use the Iris dataset for this example because it’s a classic R dataset, and it’s small enough to be very easy to manage.
+As with all previous examples, let’s get our working Excel document up and running.</description>
+    </item>
+    
+    <item>
       <title>RDCOMClient Part 6 - Writing arrays to Excel</title>
       <link>/2018/11/rdcomclient-part-6-writing-arrays-to-excel/</link>
       <pubDate>Thu, 01 Nov 2018 00:00:00 +0000</pubDate>

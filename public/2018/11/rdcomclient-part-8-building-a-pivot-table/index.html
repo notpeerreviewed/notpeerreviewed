@@ -20,7 +20,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.44 with theme Tranquilpeak 0.4.3-BETA">
-    <title>RDCOMClient Part 3 - Find()</title>
+    <title>RDCOMClient Part 8 - Building a Pivot Table</title>
     <meta name="author" content="Jeff Lean">
     <meta name="keywords" content="">
 
@@ -28,18 +28,18 @@
     
 
     
-    <meta name="description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
-    <meta property="og:description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
+    <meta name="description" content="So far in this series we’ve covered a fair bit of the necessary basics for using RDCOMClient. This post will be a bit more detailed and will show how we can build a Pivot Table from scratch. I’m going to use the Iris dataset for this example because it’s a classic R dataset, and it’s small enough to be very easy to manage.
+As with all previous examples, let’s get our working Excel document up and running.">
+    <meta property="og:description" content="So far in this series we’ve covered a fair bit of the necessary basics for using RDCOMClient. This post will be a bit more detailed and will show how we can build a Pivot Table from scratch. I’m going to use the Iris dataset for this example because it’s a classic R dataset, and it’s small enough to be very easy to manage.
+As with all previous examples, let’s get our working Excel document up and running.">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="RDCOMClient Part 3 - Find()">
-    <meta property="og:url" content="/2018/10/rdcomclient-part-3-find/">
+    <meta property="og:title" content="RDCOMClient Part 8 - Building a Pivot Table">
+    <meta property="og:url" content="/2018/11/rdcomclient-part-8-building-a-pivot-table/">
     <meta property="og:site_name" content="notpeerreviewed">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="notpeerreviewed">
-    <meta name="twitter:description" content="In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.
-If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object.">
+    <meta name="twitter:description" content="So far in this series we’ve covered a fair bit of the necessary basics for using RDCOMClient. This post will be a bit more detailed and will show how we can build a Pivot Table from scratch. I’m going to use the Iris dataset for this example because it’s a classic R dataset, and it’s small enough to be very easy to manage.
+As with all previous examples, let’s get our working Excel document up and running.">
     
     
 
@@ -224,15 +224,15 @@ If you know that there is a cell within your data that always carries the same v
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      RDCOMClient Part 3 - Find()
+      RDCOMClient Part 8 - Building a Pivot Table
     </h1>
   
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2018-10-28T00:00:00Z">
+      <time itemprop="datePublished" datetime="2018-11-03T00:00:00Z">
         
-  October 28, 2018
+  November 3, 2018
 
       </time>
     
@@ -241,13 +241,11 @@ If you know that there is a cell within your data that always carries the same v
   
     <span>in</span>
     
-      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>, 
-    
       <a class="category-link" href="/categories/excel">Excel</a>, 
     
-      <a class="category-link" href="/categories/find">Find()</a>, 
+      <a class="category-link" href="/categories/r">R</a>, 
     
-      <a class="category-link" href="/categories/r">R</a>
+      <a class="category-link" href="/categories/rdcomclient">RDCOMClient</a>
     
   
 
@@ -257,100 +255,96 @@ If you know that there is a cell within your data that always carries the same v
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>In my last post I looked at how to use the UsedRange() method to create a range from which we could read the Values. In this post we’ll look at how we can reduce the size of the range by choosing only the parts of range we know we need.</p>
-<p>If you know that there is a cell within your data that always carries the same value, you can use that as a key reference when building a range object. Let’s get our workspace up to the necessary point for this exercise. You can download this spreadsheet from <a href="https://github.com/notpeerreviewed/notpeerreviewed/tree/master/data">here</a>.</p>
+              <p>So far in this series we’ve covered a fair bit of the necessary basics for using RDCOMClient. This post will be a bit more detailed and will show how we can build a Pivot Table from scratch. I’m going to use the Iris dataset for this example because it’s a classic R dataset, and it’s small enough to be very easy to manage.</p>
+<p>As with all previous examples, let’s get our working Excel document up and running.</p>
 <pre class="r"><code>library(RDCOMClient)
 suppressMessages(library(dplyr))
-library(purrr)
+suppressMessages(library(gplots))
+suppressMessages(library(tidyr))
 
+# we&#39;ve seen this code plenty of times now so I&#39;ll compress it a bit to save space
 ex &lt;- COMCreate(&quot;Excel.Application&quot;)
 ex[[&quot;Visible&quot;]] &lt;- TRUE
-
-# access the Workbook object within ex
 Workbook &lt;- ex[[&quot;workbooks&quot;]]
+current_file &lt;- Workbook$Add()
 
-# open workbook
-current_file &lt;- Workbook$Open(&quot;D:/notpeerreviewed/data/oil.xlsx&quot;)
+# we&#39;re going to need at least two sheets 
+# so we&#39;ll add a second sheet to that workbook
+current_file$Worksheets()$Add()</code></pre>
+<p>We’re going to want our data in tidy format for this exercise so we’ll go ahead and use the gather function from the tidyr package to do this. I’d like to take this opportunity to recommend the tidyr and dplyr packages. These two packages are probably the packages I use the most in my work at the moment. They make data manipulation so incredibly easy. Do yourself a favour and learn how to use all aspects of these packages. You’ll be grateful, I promise!</p>
+<pre class="r"><code># the iris dataset comes preloaded in R
+# place the iris data in a dataframe and
+# gather it to make it tidy
+iris_data &lt;- as.data.frame(iris) %&gt;%
+  gather(dimension, value, -Species)
 
-# specify the 1st sheet
-sheet &lt;- current_file$Worksheets(&quot;Supply&quot;)</code></pre>
-<p>Ok, now we’ve got Excel running, the oil.xlsx document is open, and we’ve specified the ‘Supply’ sheet as the sheet we’re looking at. The Find() method is very handy as it allows you to tell Excel to look for the first instance of a value in a given range. The Find() method returns a Range() object, which we can then query to get the address. Suppose we’ve got a long term survey and we know there is a cell in the header that contains the string “Fuel Type”. We can get the address of that cell like this…</p>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Address()</code></pre>
-<pre><code>## [1] &quot;$A$6&quot;</code></pre>
-<p>Now that we know how to find a particular cell, we can use this to specify a range object. Say we want to read the range that includes all columns from the Fuel Type column to the Notes column, and down to the Totals row. First we need to be able to identify the row and column indexes. We can do that with the Row() and Column() methods. Let’s find the column and row of the cell containing the string “Fuel Type”.</p>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()</code></pre>
-<pre><code>## [1] 1</code></pre>
-<pre class="r"><code>sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row() </code></pre>
-<pre><code>## [1] 6</code></pre>
-<p>Now we can specify the range from which we want to read data. The final little piece to this puzzle is the Cells() property. The Cells() property allows us to generate a reference to a specific cell using row and column indexes. We can then pass this to a Range object to create the overall range from which we want to read data.</p>
-<pre class="r"><code>c1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Column()      ## first col
-c2 &lt;- sheet$UsedRange()$Find(&quot;Notes&quot;)$Column()          ## last col
+# to make life simple we will specify a data sheet and a separate pivot sheet
+dataSheet &lt;- current_file$Worksheets(1)
+pivotSheet &lt;- current_file$Worksheets(2)</code></pre>
+<p>A Pivot Table requires a header row so it can reference specific parts of the data as fields. We need to add the header row separately from the data table when we are using RDCOMClient in order to maintain type specificity. To get the header to write to a row, we need to transpose the array. This just means changing the data vector from a column vector to a row vector.</p>
+<pre class="r"><code># set the header range for our data
+# need this to provide the header rows for our pivot data
+header &lt;- dataSheet$Range(dataSheet$Cells(1,1), dataSheet$Cells(1,dim(iris_data)[2]))
 
-r1 &lt;- sheet$UsedRange()$Find(&quot;Fuel Type&quot;)$Row()         ## first row
-r2 &lt;- sheet$UsedRange()$Find(&quot;Totals&quot;)$Row()            ## last row
+# write the column names - we need to transpose the vector of column
+# names to make it have the correct dimensions
+header[[&quot;Value&quot;]] &lt;- asCOMArray(t(colnames(iris_data)))</code></pre>
+<p>If you’re keeping track of what your Excel document is doing, you should now see a row of data in one of your worksheets that matches the column names of the gathered Iris dataset. Now we’re ready to write the actual body of our data beneath the header. In order to make sure we are writing the correct type of data (numeric, or character), we will write each column of our data sequentially rather than writing the entire dataframe in one array.</p>
+<pre class="r"><code># set the range to be populated based on the dimensions of the dataframe holding that data
+datarange &lt;- dataSheet$Range(dataSheet$Cells(2,1),
+                             dataSheet$Cells(dim(iris_data)[1] + 1, dim(iris_data)[2]))
 
+# respecify the full range of data for the pivot table to include the headers
+pivot_data &lt;- dataSheet$Range(dataSheet$Cells(1,1),
+                             dataSheet$Cells(dim(iris_data)[1] + 1, dim(iris_data)[2]))
 
-# create the range object using the cells we found above
-# we&#39;re using r1+1 because we don&#39;t want to read in the header row
-range &lt;- sheet$Range(sheet$Cells(r1+1,c1),sheet$Cells(r2,c2))
+# we need to loop over each column so that the column type is correctly transferred
+# with the data. If we tried to export the entire dataframe in one go it gets coerced to
+# character which means we can&#39;t do any calculations with the numbers in Excel as they are
+# character values instead and we can&#39;t convert to numbers after the fact
+for(k in 1:dim(iris_data)[2])  {
+  r = dataSheet$Range(dataSheet$Cells(2, k),
+                      dataSheet$Cells(dim(iris_data)[1] + 1, k))
+  r[[&quot;Value&quot;]] = asCOMArray(iris_data[k])
+}</code></pre>
+<p>Now we’ve got our data in the dataSheet of our workbook and we’re ready to construct the Pivot Table. Take a deep breath, this is going to get a bit more complicated that anything we’ve done so far!</p>
+<p>The first step is to create a PivotCache. This is essentially creating a specific type of object that is required to access the pivot table methods. We need to be able to access the “CreatePivotTable” method, which exists as part of the PivotCache object.</p>
+<pre class="r"><code># SourceType = 1 indicates an Excel list or array is the data source
+pivot_cache &lt;- current_file$PivotCaches()$Create(SourceType = 1,
+                                                 SourceData = pivot_data)
 
-# get data
-df &lt;- range[[&#39;Value&#39;]] %&gt;%
-  map(function(x) {ifelse(x == &quot;NULL&quot;, NA, x)}) %&gt;%
-  map_dfc(~ as.data.frame(unlist(.), stringsAsFactors = FALSE))
+# here we take the pivot_cache object and call the CreatePivotTable method
+# we specify the address we want the table to be placed and
+# the name we want to allocate to the table. This is used to reference
+# the table later
+pivot_table &lt;- pivot_cache$CreatePivotTable(TableDestination = pivotSheet$Cells(2,2),
+                                            TableName = &quot;Iris Pivot Table&quot;)</code></pre>
+<p>At this point we have an empty pivot table in the pivot table sheet. There’s no data in this yet because we haven’t specified any of the row or column data. Let’s do that now. Say we want to use the Species column as the main filter for the table and the iris dimensions as the rows in the table. Finally, we’ll specify the values to be the averages of the respective values for each dimension.</p>
+<p>This is a bit of a contrived example but it serves the purpose of demonstrating how to set various parameters in a pivot table.</p>
+<p>The Microsoft help pages are an invaluable resource for figuring out how to set various parameters. It took me a while to figure out that you need to use the Excel enumeration values for various parameters when setting them through RDCOMClient. Setting the PivotField parameter is explained <a href="https://msdn.microsoft.com/en-us/vba/excel-vba/articles/xlpivotfieldorientation-enumeration-excel?f=255&amp;MSPPError=-2147217396">here</a>. Setting the function parameter for dealing with data values is explained <a href="https://msdn.microsoft.com/en-us/vba/excel-vba/articles/xlconsolidationfunction-enumeration-excel">here</a>.</p>
+<pre class="r"><code>species &lt;- pivotSheet$PivotTables(&quot;Iris Pivot Table&quot;)$PivotFields(&quot;Species&quot;)
 
-head(df)</code></pre>
-<pre><code>##                    unlist(.) unlist(.)1 unlist(.)2 unlist(.)3 unlist(.)4
-## 1             Premium Petrol    391.726   9457.211  13206.803   6377.691
-## 2             Regular Petrol  13332.860   38373.96  28472.584  16734.403
-## 3          Automotive Diesel  99497.579  47814.021  21607.902   8320.415
-## 4             Light Fuel Oil  16272.644          0   6007.899          0
-## 5   Heavy (residue) Fuel Oil -33022.470          0   2119.214          0
-## 6 Jet-A1 / Avtur / Av. kero.  13979.257          0  34208.210          0
-##   unlist(.)5 unlist(.)6 unlist(.)7 unlist(.)8 unlist(.)9 unlist(.)10
-## 1          0    -57.529         NA         NA         NA    6192.815
-## 2          0     92.609         NA         NA         NA   49620.464
-## 3          0     25.402     96.676         NA         NA   72716.520
-## 4          0         NA         NA         NA         NA    4882.538
-## 5          0         NA   3499.964         NA         NA          NA
-## 6          0         NA  23207.180         NA         NA   15299.322
-##   unlist(.)11 unlist(.)12 unlist(.)13 unlist(.)14 unlist(.)15 unlist(.)16
-## 1           0      69.000          NA    10358.34           0          NA
-## 2           0      -4.000          NA    13921.15           0          NA
-## 3           0     -34.000          NA    87846.03           0          NA
-## 4           0      67.840          NA    17330.17           0          NA
-## 5           0     -24.391          NA   -34378.83           0          NA
-## 6           0      14.515          NA     9666.45           0          NA</code></pre>
-<p>We could get really creative and read in the header data as well, but in this case there are a few cells that are merged, so this wouldn’t work here without unmerging those cells first. In this case it would be simpler to specify the column names explicitly.</p>
-<pre class="r"><code>header &lt;- c(&quot;fuel&quot;, &quot;openingStock&quot;, &quot;imports&quot;, &quot;refineryDeliveries&quot;, &quot;sales&quot;, &quot;purchases&quot;,
-            &quot;reblending&quot;, &quot;internationalTransport&quot;, &quot;elecGen&quot;, &quot;rerefining&quot;, &quot;otherSales&quot;,
-            &quot;exports&quot;, &quot;losses&quot;, &quot;ownUse&quot;, &quot;closingStock&quot;, &quot;errorCheck&quot;, &quot;notes&quot;)
+# set company field as a row field using the enumeration for xlRowField = 1
+species[[&quot;Orientation&quot;]] &lt;- 3
 
-colnames(df) &lt;- header
+# set the dimension to be a row variable
+tableName &lt;- pivotSheet$PivotTables(&quot;Iris Pivot Table&quot;)
+dimension &lt;- tableName$PivotFields(&quot;dimension&quot;)
+dimension[[&quot;Orientation&quot;]] &lt;- 1
 
-head(df)</code></pre>
-<pre><code>##                         fuel openingStock   imports refineryDeliveries
-## 1             Premium Petrol      391.726  9457.211          13206.803
-## 2             Regular Petrol    13332.860  38373.96          28472.584
-## 3          Automotive Diesel    99497.579 47814.021          21607.902
-## 4             Light Fuel Oil    16272.644         0           6007.899
-## 5   Heavy (residue) Fuel Oil   -33022.470         0           2119.214
-## 6 Jet-A1 / Avtur / Av. kero.    13979.257         0          34208.210
-##       sales purchases reblending internationalTransport elecGen rerefining
-## 1  6377.691         0    -57.529                     NA      NA         NA
-## 2 16734.403         0     92.609                     NA      NA         NA
-## 3  8320.415         0     25.402                 96.676      NA         NA
-## 4         0         0         NA                     NA      NA         NA
-## 5         0         0         NA               3499.964      NA         NA
-## 6         0         0         NA              23207.180      NA         NA
-##   otherSales exports  losses ownUse closingStock errorCheck notes
-## 1   6192.815       0  69.000     NA     10358.34          0    NA
-## 2  49620.464       0  -4.000     NA     13921.15          0    NA
-## 3  72716.520       0 -34.000     NA     87846.03          0    NA
-## 4   4882.538       0  67.840     NA     17330.17          0    NA
-## 5         NA       0 -24.391     NA    -34378.83          0    NA
-## 6  15299.322       0  14.515     NA      9666.45          0    NA</code></pre>
-<p>Now you can specify a particular range of cells to be read based on finding a value in a particular cell. This is still nothing too spectacular, and certainly nothing that can’t be done using another Excel reader like readxl combined with some judicious cleaning. In my next post I’ll cover writing data to a document and formatting that data.</p>
+# set row header
+tableName[[&quot;CompactLayoutRowHeader&quot;]] &lt;- &quot;Iris Dimensions&quot;
+
+# set values to be a data field with Orientation = 4
+# set the function to be average by using enumeration code -4106
+values &lt;- pivotSheet$PivotTables(&quot;Iris Pivot Table&quot;)$PivotFields(&quot;value&quot;)
+values[[&quot;Orientation&quot;]] &lt;- 4
+values[[&quot;Function&quot;]] &lt;- -4106
+values[[&quot;NumberFormat&quot;]] &lt;- &quot;0.0&quot;</code></pre>
+<p>If you don’t want to have the grand totals you can turn them off.</p>
+<pre class="r"><code>grand_off &lt;- pivotSheet$PivotTables(&quot;Iris Pivot Table&quot;)
+grand_off[[&quot;ColumnGrand&quot;]] &lt;- FALSE</code></pre>
+<p>Knowing how to build a Pivot Table programmatically is a really useful thing because it enables complete reproducibility and can save you a tonne of time. If you have data products that you want to build into a publication ready document you can use the techniques I’ve covered in this series of posts to format your data and polish an Excel spreadsheet without ever having to actually open one manually.</p>
 <p>Session info for this post.</p>
 <pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
 <pre><code>## R version 3.5.0 (2018-04-23)
@@ -362,17 +356,12 @@ head(df)</code></pre>
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
-## other attached packages:
-## [1] purrr_0.2.5        dplyr_0.7.5        RDCOMClient_0.93-0
-## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.17     knitr_1.20       bindr_0.1.1      magrittr_1.5    
-##  [5] tidyselect_0.2.4 R6_2.2.2         rlang_0.2.1      stringr_1.3.1   
-##  [9] tools_3.5.0      xfun_0.3         htmltools_0.3.6  yaml_2.1.19     
-## [13] rprojroot_1.3-2  digest_0.6.15    assertthat_0.2.0 tibble_1.4.2    
-## [17] bookdown_0.7     bindrcpp_0.2.2   glue_1.2.0       evaluate_0.10.1 
-## [21] rmarkdown_1.10   blogdown_0.8.1   stringi_1.1.7    compiler_3.5.0  
-## [25] pillar_1.2.3     backports_1.1.2  pkgconfig_2.0.1</code></pre>
+##  [1] compiler_3.5.0  backports_1.1.2 bookdown_0.7    magrittr_1.5   
+##  [5] rprojroot_1.3-2 tools_3.5.0     htmltools_0.3.6 yaml_2.1.19    
+##  [9] Rcpp_0.12.17    stringi_1.1.7   rmarkdown_1.10  blogdown_0.8.1 
+## [13] knitr_1.20      stringr_1.3.1   digest_0.6.15   xfun_0.3       
+## [17] evaluate_0.10.1</code></pre>
 
               
             </div>
@@ -387,11 +376,11 @@ head(df)</code></pre>
                     
   <a class="tag tag--primary tag--small" href="/tags/excel/">Excel</a>
 
+  <a class="tag tag--primary tag--small" href="/tags/r/">R</a>
+
   <a class="tag tag--primary tag--small" href="/tags/rdcomclient/">RDCOMClient</a>
 
-  <a class="tag tag--primary tag--small" href="/tags/reading-data/">reading data</a>
-
-  <a class="tag tag--primary tag--small" href="/tags/r/">R</a>
+  <a class="tag tag--primary tag--small" href="/tags/pivottable/">PivotTable</a>
 
                   </div>
                 
@@ -404,7 +393,7 @@ head(df)</code></pre>
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" data-tooltip="RDCOMClient Part 4 - Writing data to Excel">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/11/rdcomclient-part-7-gotchas-value-vs-text/" data-tooltip="RDCOMClient Part 7 - [[&#34;Value&#34;]] vs [[&#34;Text&#34;]]">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -412,7 +401,7 @@ head(df)</code></pre>
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-2/" data-tooltip="RDCOMClient Part 2 - UsedRange()">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/11/rdcomclient-part-6-writing-arrays-to-excel/" data-tooltip="RDCOMClient Part 6 - Writing arrays to Excel">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -430,19 +419,19 @@ head(df)</code></pre>
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/11/rdcomclient-part-8-building-a-pivot-table/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/11/rdcomclient-part-8-building-a-pivot-table/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/11/rdcomclient-part-8-building-a-pivot-table/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -497,7 +486,7 @@ s.setAttribute('data-timestamp', +new Date());
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-4-writing-data-to-excel/" data-tooltip="RDCOMClient Part 4 - Writing data to Excel">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/11/rdcomclient-part-7-gotchas-value-vs-text/" data-tooltip="RDCOMClient Part 7 - [[&#34;Value&#34;]] vs [[&#34;Text&#34;]]">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -505,7 +494,7 @@ s.setAttribute('data-timestamp', +new Date());
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/10/rdcomclient-part-2/" data-tooltip="RDCOMClient Part 2 - UsedRange()">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2018/11/rdcomclient-part-6-writing-arrays-to-excel/" data-tooltip="RDCOMClient Part 6 - Writing arrays to Excel">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -523,19 +512,19 @@ s.setAttribute('data-timestamp', +new Date());
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2018/11/rdcomclient-part-8-building-a-pivot-table/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2018/11/rdcomclient-part-8-building-a-pivot-table/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/10/rdcomclient-part-3-find/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2018/11/rdcomclient-part-8-building-a-pivot-table/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -565,19 +554,19 @@ s.setAttribute('data-timestamp', +new Date());
   <ul class="share-options">
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2018%2F11%2Frdcomclient-part-8-building-a-pivot-table%2F">
           <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2018%2F11%2Frdcomclient-part-8-building-a-pivot-table%2F">
           <i class="fa fa-twitter"></i><span>Share on Twitter</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F10%2Frdcomclient-part-3-find%2F">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2018%2F11%2Frdcomclient-part-8-building-a-pivot-table%2F">
           <i class="fa fa-google-plus"></i><span>Share on Google&#43;</span>
         </a>
       </li>
@@ -830,9 +819,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = '\/2018\/10\/rdcomclient-part-3-find\/';
+          this.page.url = '\/2018\/11\/rdcomclient-part-8-building-a-pivot-table\/';
           
-            this.page.identifier = '\/2018\/10\/rdcomclient-part-3-find\/'
+            this.page.identifier = '\/2018\/11\/rdcomclient-part-8-building-a-pivot-table\/'
           
         };
         (function() {

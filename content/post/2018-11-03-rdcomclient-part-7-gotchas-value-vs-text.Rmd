@@ -12,7 +12,7 @@ tags:
   - RDCOMClient
   - R
   - '[["Value"]]'
-  - $text()
+  - '[["Text"]]'
 ---
 
 This post will be a bit shorter than usual, but I thought it could be useful to highlight a potential 'gotcha' that could cause problems for newcomers to RDCOMClient.

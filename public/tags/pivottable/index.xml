@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pivottable on notpeerreviewed</title>
+    <link>/tags/pivottable/</link>
+    <description>Recent content in Pivottable on notpeerreviewed</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 03 Nov 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/pivottable/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>RDCOMClient Part 8 - Building a Pivot Table</title>
+      <link>/2018/11/rdcomclient-part-8-building-a-pivot-table/</link>
+      <pubDate>Sat, 03 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/11/rdcomclient-part-8-building-a-pivot-table/</guid>
+      <description>So far in this series we’ve covered a fair bit of the necessary basics for using RDCOMClient. This post will be a bit more detailed and will show how we can build a Pivot Table from scratch. I’m going to use the Iris dataset for this example because it’s a classic R dataset, and it’s small enough to be very easy to manage.
+As with all previous examples, let’s get our working Excel document up and running.</description>
+    </item>
+    
+  </channel>
+</rss>

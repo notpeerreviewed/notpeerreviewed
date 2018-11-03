@@ -1,0 +1,125 @@
+---
+title: RDCOMClient Part 8 - Building a Pivot Table
+author: Jeff Lean
+date: '2018-11-03'
+slug: rdcomclient-part-8-building-a-pivot-table
+categories:
+  - Excel
+  - R
+  - RDCOMClient
+tags:
+  - Excel
+  - R
+  - RDCOMClient
+  - PivotTable
+---
+
+
+
+<p>So far in this series we’ve covered a fair bit of the necessary basics for using RDCOMClient. This post will be a bit more detailed and will show how we can build a Pivot Table from scratch. I’m going to use the Iris dataset for this example because it’s a classic R dataset, and it’s small enough to be very easy to manage.</p>
+<p>As with all previous examples, let’s get our working Excel document up and running.</p>
+<pre class="r"><code>library(RDCOMClient)
+suppressMessages(library(dplyr))
+suppressMessages(library(gplots))
+suppressMessages(library(tidyr))
+
+# we&#39;ve seen this code plenty of times now so I&#39;ll compress it a bit to save space
+ex &lt;- COMCreate(&quot;Excel.Application&quot;)
+ex[[&quot;Visible&quot;]] &lt;- TRUE
+Workbook &lt;- ex[[&quot;workbooks&quot;]]
+current_file &lt;- Workbook$Add()
+
+# we&#39;re going to need at least two sheets 
+# so we&#39;ll add a second sheet to that workbook
+current_file$Worksheets()$Add()</code></pre>
+<p>We’re going to want our data in tidy format for this exercise so we’ll go ahead and use the gather function from the tidyr package to do this. I’d like to take this opportunity to recommend the tidyr and dplyr packages. These two packages are probably the packages I use the most in my work at the moment. They make data manipulation so incredibly easy. Do yourself a favour and learn how to use all aspects of these packages. You’ll be grateful, I promise!</p>
+<pre class="r"><code># the iris dataset comes preloaded in R
+# place the iris data in a dataframe and
+# gather it to make it tidy
+iris_data &lt;- as.data.frame(iris) %&gt;%
+  gather(dimension, value, -Species)
+
+# to make life simple we will specify a data sheet and a separate pivot sheet
+dataSheet &lt;- current_file$Worksheets(1)
+pivotSheet &lt;- current_file$Worksheets(2)</code></pre>
+<p>A Pivot Table requires a header row so it can reference specific parts of the data as fields. We need to add the header row separately from the data table when we are using RDCOMClient in order to maintain type specificity. To get the header to write to a row, we need to transpose the array. This just means changing the data vector from a column vector to a row vector.</p>
+<pre class="r"><code># set the header range for our data
+# need this to provide the header rows for our pivot data
+header &lt;- dataSheet$Range(dataSheet$Cells(1,1), dataSheet$Cells(1,dim(iris_data)[2]))
+
+# write the column names - we need to transpose the vector of column
+# names to make it have the correct dimensions
+header[[&quot;Value&quot;]] &lt;- asCOMArray(t(colnames(iris_data)))</code></pre>
+<p>If you’re keeping track of what your Excel document is doing, you should now see a row of data in one of your worksheets that matches the column names of the gathered Iris dataset. Now we’re ready to write the actual body of our data beneath the header. In order to make sure we are writing the correct type of data (numeric, or character), we will write each column of our data sequentially rather than writing the entire dataframe in one array.</p>
+<pre class="r"><code># set the range to be populated based on the dimensions of the dataframe holding that data
+datarange &lt;- dataSheet$Range(dataSheet$Cells(2,1),
+                             dataSheet$Cells(dim(iris_data)[1] + 1, dim(iris_data)[2]))
+
+# respecify the full range of data for the pivot table to include the headers
+pivot_data &lt;- dataSheet$Range(dataSheet$Cells(1,1),
+                             dataSheet$Cells(dim(iris_data)[1] + 1, dim(iris_data)[2]))
+
+# we need to loop over each column so that the column type is correctly transferred
+# with the data. If we tried to export the entire dataframe in one go it gets coerced to
+# character which means we can&#39;t do any calculations with the numbers in Excel as they are
+# character values instead and we can&#39;t convert to numbers after the fact
+for(k in 1:dim(iris_data)[2])  {
+  r = dataSheet$Range(dataSheet$Cells(2, k),
+                      dataSheet$Cells(dim(iris_data)[1] + 1, k))
+  r[[&quot;Value&quot;]] = asCOMArray(iris_data[k])
+}</code></pre>
+<p>Now we’ve got our data in the dataSheet of our workbook and we’re ready to construct the Pivot Table. Take a deep breath, this is going to get a bit more complicated that anything we’ve done so far!</p>
+<p>The first step is to create a PivotCache. This is essentially creating a specific type of object that is required to access the pivot table methods. We need to be able to access the “CreatePivotTable” method, which exists as part of the PivotCache object.</p>
+<pre class="r"><code># SourceType = 1 indicates an Excel list or array is the data source
+pivot_cache &lt;- current_file$PivotCaches()$Create(SourceType = 1,
+                                                 SourceData = pivot_data)
+
+# here we take the pivot_cache object and call the CreatePivotTable method
+# we specify the address we want the table to be placed and
+# the name we want to allocate to the table. This is used to reference
+# the table later
+pivot_table &lt;- pivot_cache$CreatePivotTable(TableDestination = pivotSheet$Cells(2,2),
+                                            TableName = &quot;Iris Pivot Table&quot;)</code></pre>
+<p>At this point we have an empty pivot table in the pivot table sheet. There’s no data in this yet because we haven’t specified any of the row or column data. Let’s do that now. Say we want to use the Species column as the main filter for the table and the iris dimensions as the rows in the table. Finally, we’ll specify the values to be the averages of the respective values for each dimension.</p>
+<p>This is a bit of a contrived example but it serves the purpose of demonstrating how to set various parameters in a pivot table.</p>
+<p>The Microsoft help pages are an invaluable resource for figuring out how to set various parameters. It took me a while to figure out that you need to use the Excel enumeration values for various parameters when setting them through RDCOMClient. Setting the PivotField parameter is explained <a href="https://msdn.microsoft.com/en-us/vba/excel-vba/articles/xlpivotfieldorientation-enumeration-excel?f=255&amp;MSPPError=-2147217396">here</a>. Setting the function parameter for dealing with data values is explained <a href="https://msdn.microsoft.com/en-us/vba/excel-vba/articles/xlconsolidationfunction-enumeration-excel">here</a>.</p>
+<pre class="r"><code>species &lt;- pivotSheet$PivotTables(&quot;Iris Pivot Table&quot;)$PivotFields(&quot;Species&quot;)
+
+# set company field as a row field using the enumeration for xlRowField = 1
+species[[&quot;Orientation&quot;]] &lt;- 3
+
+# set the dimension to be a row variable
+tableName &lt;- pivotSheet$PivotTables(&quot;Iris Pivot Table&quot;)
+dimension &lt;- tableName$PivotFields(&quot;dimension&quot;)
+dimension[[&quot;Orientation&quot;]] &lt;- 1
+
+# set row header
+tableName[[&quot;CompactLayoutRowHeader&quot;]] &lt;- &quot;Iris Dimensions&quot;
+
+# set values to be a data field with Orientation = 4
+# set the function to be average by using enumeration code -4106
+values &lt;- pivotSheet$PivotTables(&quot;Iris Pivot Table&quot;)$PivotFields(&quot;value&quot;)
+values[[&quot;Orientation&quot;]] &lt;- 4
+values[[&quot;Function&quot;]] &lt;- -4106
+values[[&quot;NumberFormat&quot;]] &lt;- &quot;0.0&quot;</code></pre>
+<p>If you don’t want to have the grand totals you can turn them off.</p>
+<pre class="r"><code>grand_off &lt;- pivotSheet$PivotTables(&quot;Iris Pivot Table&quot;)
+grand_off[[&quot;ColumnGrand&quot;]] &lt;- FALSE</code></pre>
+<p>Knowing how to build a Pivot Table programmatically is a really useful thing because it enables complete reproducibility and can save you a tonne of time. If you have data products that you want to build into a publication ready document you can use the techniques I’ve covered in this series of posts to format your data and polish an Excel spreadsheet without ever having to actually open one manually.</p>
+<p>Session info for this post.</p>
+<pre class="r"><code>print(sessionInfo(), locale = FALSE)</code></pre>
+<pre><code>## R version 3.5.0 (2018-04-23)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17134)
+## 
+## Matrix products: default
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## loaded via a namespace (and not attached):
+##  [1] compiler_3.5.0  backports_1.1.2 bookdown_0.7    magrittr_1.5   
+##  [5] rprojroot_1.3-2 tools_3.5.0     htmltools_0.3.6 yaml_2.1.19    
+##  [9] Rcpp_0.12.17    stringi_1.1.7   rmarkdown_1.10  blogdown_0.8.1 
+## [13] knitr_1.20      stringr_1.3.1   digest_0.6.15   xfun_0.3       
+## [17] evaluate_0.10.1</code></pre>

@@ -8,6 +8,11 @@
   </url>
   
   <url>
+    <loc>/2018/11/rdcomclient-part-8-building-a-pivot-table/</loc>
+    <lastmod>2018-11-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/2018/11/rdcomclient-part-6-writing-arrays-to-excel/</loc>
     <lastmod>2018-11-01T00:00:00+00:00</lastmod>
   </url>
@@ -48,13 +53,13 @@
   </url>
   
   <url>
-    <loc>/tags/excel/</loc>
+    <loc>/categories/excel/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/categories/excel/</loc>
+    <loc>/tags/excel/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -66,13 +71,13 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
+    <loc>/tags/pivottable/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/tags/r/</loc>
+    <loc>/post/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -84,13 +89,19 @@
   </url>
   
   <url>
-    <loc>/tags/rdcomclient/</loc>
+    <loc>/tags/r/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/rdcomclient/</loc>
+    <lastmod>2018-11-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/rdcomclient/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
