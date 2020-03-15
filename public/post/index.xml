@@ -6,10 +6,19 @@
     <description>Recent content in Posts on notpeerreviewed</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 03 Nov 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 14 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Mapping NZ with an orthographic projection</title>
+      <link>/2020/03/mapping-nz-with-an-orthographic-projection/</link>
+      <pubDate>Sat, 14 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/03/mapping-nz-with-an-orthographic-projection/</guid>
+      <description>I’ve recently been more involved with mapping projects at work and I was asked by a colleague to update an older product as some of the boundary information had changed in a particular region. I’ve been taking every opportunity to use R for my mapping and geospatial work if at all possible so I immediately thought I’d give it a go with this project too. I thought it’d be just another quick job and then back to what I was doing before.</description>
+    </item>
     
     <item>
       <title>RDCOMClient Part 7 - [[&#34;Value&#34;]] vs [[&#34;Text&#34;]]</title>

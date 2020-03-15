@@ -1,0 +1,137 @@
+---
+title: Mapping NZ with an orthographic projection
+author: Jeff Lean
+date: '2020-03-14'
+slug: mapping-nz-with-an-orthographic-projection
+categories:
+  - R
+  - sf
+  - mapping
+tags: 
+  - R
+  - sf
+  - mapping
+---
+
+
+
+<p>I’ve recently been more involved with mapping projects at work and I was asked by a colleague to update an older product as some of the boundary information had changed in a particular region. I’ve been taking every opportunity to use R for my mapping and geospatial work if at all possible so I immediately thought I’d give it a go with this project too. I thought it’d be just another quick job and then back to what I was doing before. I could not have been more wrong. This post details most of what I went through to build the final product.</p>
+<p>First lets load up the packages we’ll be using.</p>
+<pre class="r"><code>library(rworldmap)
+library(dplyr)
+library(ggplot2)
+library(geosphere)
+library(gpclib)
+library(mapproj)
+library(sf)
+library(maptools)
+library(rnaturalearth)
+library(cowplot)
+library(ggrepel)</code></pre>
+<p>The product I was updating shows the New Zealand Search and Rescue Region and the Search and Rescue Regions of our neighbouring South Pacific nations. The product I was asked to update used an orthographic projection centred on New Zealand.</p>
+<p>I’ve been using the sf package almost exclusively with all my other mapping and it’s been working flawlessly for me so I thought I’d get the result I wanted from this. However, when I tried applying the orthographic projection I got some peculiar horizontal lines. I’m not sure why this is happening but it looks similar to what happens when you have an unclosed polygon.</p>
+<p>I found <a href="https://github.com/r-spatial/sf/issues/1050">this</a> issue listed on the sf package Github page so I know it’s something that is being looked at.</p>
+<p>After a few days of searching for an answer I stumbled across this great post by Ewen Gallic <a href="https://egallic.fr/en/maps-with-r/">https://egallic.fr/en/maps-with-r/</a> that describes how to build an orthographic projection. I doubt I would have been able to get my map working if I hadn’t found his solution.</p>
+<p>I also needed a way to deal with polygons that cross the antimeridian. I found this solution <a href="https://stackoverflow.com/questions/55162548/is-there-a-better-way-for-handling-spatialpolygons-that-cross-the-antimeridian">here</a>. So let’s work through what I did to get my map updated.</p>
+<pre class="r"><code># download world data and use the nowrapRecenter function to center map
+# on 180 degrees. This is important for aligning our polygons later
+worldMap &lt;- getMap(resolution = &quot;low&quot;) %&gt;% 
+  nowrapRecenter()
+
+# converts data to a dataframe
+world.points &lt;- fortify(worldMap)
+
+# basic manipulation
+world.points$region &lt;- world.points$id
+
+world.df &lt;- world.points[,c(&quot;long&quot;,&quot;lat&quot;,&quot;group&quot;, &quot;region&quot;)]</code></pre>
+<p>Next thing is to load our search and rescue regions from a shapefile we have saved. These can be downloaded <a href="/resources/NZSRR.zip">here</a>. I used the st_shift_longitude() function from the sf package to shift the polygon coordinates by 180 degrees. The polygons for Fiji and New Zealand were actually split in the original specification because they straddled the antimeridian, so we need to merge the split polygons. I initially tried to use the st_union() function, but for some reason it didn’t work for me. Instead, I aggregated by country name and that seemed to work well.</p>
+<pre class="r"><code># load our search and rescue regions shapefile
+nzsrr &lt;- st_read(&quot;South_Pacific_SRR_Polygons.shp&quot;) %&gt;% 
+  # filter out the unnecessary polygons for Australia and Chile
+  filter(OBJECTID &gt; 2) %&gt;%
+  # this is the sf package function that recenters the map at 180 degrees
+  # only works for sf objects though
+  st_shift_longitude() %&gt;%
+  # now aggregate the NZ and Fiji polygons
+  # I couldn&#39;t get st_union to work for some reason
+  group_by(Nation_1) %&gt;%
+  summarise(Shape_Leng = sum(Shape_Leng),
+            Shape_Area = sum(Shape_Area)) %&gt;%
+  ungroup()</code></pre>
+<p>The next thing was to transform the sf object into a simple dataframe so we could use it with the geom_polygon() function in our plot later.</p>
+<pre class="r"><code>nzsrr_polygons &lt;- nzsrr %&gt;%
+  as(&#39;Spatial&#39;) %&gt;%
+  fortify()</code></pre>
+<p>I also wanted to extract the centroids so I had a neat set of points for using in a label layer. Interestingly, this didn’t need to changed from an sf object for it to work well in the ggplot later.</p>
+<pre class="r"><code>nzsrr_label_points &lt;- nzsrr %&gt;%
+  st_centroid() %&gt;%
+  select(Nation_1, geometry) </code></pre>
+<p>I also wanted to have a nice blue ocean as a background so I went ahead and downloaded the natural earth ocean polygons.</p>
+<pre class="r"><code>oceans &lt;- ne_download(scale = 50, 
+                      type = &quot;ocean&quot;,
+                      category = &quot;physical&quot;)</code></pre>
+<p>We also need to transform these the same way as all the other layers. We also need to recenter these polygons so they line up with the other layers.</p>
+<pre class="r"><code>oceans_fort &lt;- oceans %&gt;%
+  nowrapRecenter() %&gt;%
+  fortify()</code></pre>
+<p>Now that we’ve got all our data layers we can move on to creating the chart. There’s quite a bit happening here so I’ll briefly run through what I’ve done.</p>
+<pre class="r"><code>worldmap &lt;- ggplot() + 
+  geom_polygon(data = oceans_fort, aes(x = long, y = lat), fill = &#39;aliceblue&#39;) +
+  geom_polygon(data = world.df, aes(x = long, y = lat, group = group), fill = &quot;grey60&quot;) +
+  geom_polygon(data=nzsrr_polygons, aes(x = long, y = lat, group = group, colour = &#39;red&#39;), alpha = 0.1, size = 1) +
+  # add labels with some tweaking for stylistic purposes
+  ggrepel::geom_label_repel(data = nzsrr_label_points,
+                            size = 4,
+                            aes(label = Nation_1, geometry = geometry),
+                            stat = &quot;sf_coordinates&quot;,
+                            fontface = &quot;bold&quot;,
+                            alpha = 0.7,
+                            nudge_x = case_when(nzsrr_label_points$Nation_1 == &quot;Fiji&quot; ~ 5,
+                                                TRUE ~ -10),
+                            nudge_y = case_when(nzsrr_label_points$Nation_1 == &quot;New Caledonia&quot; ~ -10,
+                                                nzsrr_label_points$Nation_1 == &quot;Solomon Islands&quot; ~ -8,
+                                                nzsrr_label_points$Nation_1 == &quot;Fiji&quot; ~ 15,
+                                                TRUE ~ 10),
+                            force = 20) +
+  scale_y_continuous(breaks = (-4:4) * 15) +
+  scale_x_continuous(breaks = (0:12) * 30) +
+  # this is where the magical coord_map function creates our orthographic projection
+  # centred on NZ
+  coord_map(&quot;ortho&quot;, orientation=c(-35, 175, 0)) +
+  theme(panel.grid.major = element_line(color = &quot;grey&quot;, size = 0.5, 
+                            linetype = 1, lineend = &quot;butt&quot;),
+        axis.text = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        panel.ontop = TRUE, # this places the chart panel on the top to give us our graticules
+        panel.background = element_blank(), # this removes the background so the map shows through
+        legend.position = &quot;none&quot;)
+worldmap</code></pre>
+<p>There’s quite a bit happening here so I’ll briefly run through what I’ve done. We first create a blank ggplot object with the ggplot() call. Then we add the first layer. Remember that each layer of a ggplot is added incrementally so the first layer will effectively be on the bottom of a chart and subsequent layers will be drawn over the top of it. We want the oceans to be behind everything so we draw the oceans layer first.</p>
+<p>Next we add the world countries layer and the New Zealand search and rescue regions layers (nzsrr_polygons).</p>
+<p>I often use the brilliant ggrepel package when I’m doing mapping work and apply some styling tweaks. In this case I’ve used the centroids I calculated earlier as a point layer from which to drawn the labels. I’ve applied a slight transparency (alpha = 0.7), and a conditional nudge factor to a few labels depending on where they occur. This took a few tries to figure out the best position but they seem to have worked out fine in the end.</p>
+<p>The scale_x_continuous and scale_y_continuous were used to create map graticules (the latitude and longitude lines) of a suitable size. The scale_y was over the range -4 to +4 because we have both north and south hemispheres on the map. The scale_x is from 0 to 12 because, as you’ll remember, we shifted the coordinates 180 degrees so now our longitudes go from 0 to 360 degrees instead of -180 to 180 degrees. I used 12 because I wanted one line for every 30 degrees.</p>
+<p>The next line “coord_map(”ortho“, orientation=c(-35, 175, 0))” is where the magic happens and the map is projected to an orthographic, or spherical, shape. The orientation argument is just telling the map where to centre. In this case, I’ve centred it on New Zealand.</p>
+<p>The last part of the plot function is applying some styling elements. There’s a few more neat little tricks at play here. The graticules on a map like this are really just the chart grid element projected in a certain way. This means that they would actually be underneath the oceans and countries layers. But we can actually render the chart panel on top of everything else to give us the graticules. The trick here is that we also need to make the panel background transparent so we don’t just have a grey globe. Here we’ve used the panel.ontop = TRUE argument and the panel.background = element_blank() argument to accomplish this.</p>
+<p>And just like that, we have an awesome new orthographic map of the world centred at New Zealand.</p>
+<p><img src="/img/ortho_earth.png" /></p>
+<p>But I can’t just use an image by itself for a publication can I? I need to have some neat layout and titles. To accomplish this I used the cowplot package.</p>
+<pre class="r"><code>p &lt;- plot_grid(NULL, worldmap, NULL, rel_widths = c(1, 3, 1), ncol = 3) +
+      draw_line(x = c(0.01, 0.99, 0.99, 0.01, 0.01),
+                y = c(0.9, 0.9, 0.1, 0.1, 0.9),
+                color = &#39;grey20&#39;,
+                size = 0.5) +
+      draw_line(x = c(0.01, 0.99),
+                y = c(0.91, 0.91),
+                color = &#39;black&#39;,
+                size = 0.8) +
+  draw_image(&quot;logo.png&quot;,
+             width = 0.13, height = 0.08, y = 0.92) +
+  draw_text(&quot;Search and Rescue Regions of the South Pacific&quot;, x = 0.15, y = 0.935, size = 18, hjust = 0)</code></pre>
+<p>I wanted the globe to sit in the middle of a rectangular page with a bit of space either side, so I set up a plot grid with relative widths of 1,3,1 and three columns. Then I draw lines around this plot grid. I admit I did this because I couldn’t find a neat way to draw a border the way I wanted. Then I added the logo for New Zealand Search and Rescue, and a title for the map.</p>
+<p>Finally, I save the image for sharing.</p>
+<pre class="r"><code># the units here took a few goes to get right but it finally looks ok
+ggsave(&quot;NZSRR.pdf&quot;, width = 16, height = 12, units = &quot;in&quot;)</code></pre>
+<p>And here’s the final product. Actually the real output is a bit tidier as I had to output this png for this blog post, but you get the idea.</p>
+<p><img src="/img/nzsrr.png" /></p>

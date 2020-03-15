@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/2020/03/mapping-nz-with-an-orthographic-projection/</loc>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/2018/11/rdcomclient-part-7-gotchas-value-vs-text/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
   </url>
@@ -53,13 +58,13 @@
   </url>
   
   <url>
-    <loc>/categories/excel/</loc>
+    <loc>/tags/excel/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/tags/excel/</loc>
+    <loc>/categories/excel/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -71,6 +76,18 @@
   </url>
   
   <url>
+    <loc>/tags/mapping/</loc>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/mapping/</loc>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/pivottable/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -78,18 +95,24 @@
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2018-11-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2018-11-03T00:00:00+00:00</lastmod>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/r/</loc>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/rdcomclient/</loc>
     <lastmod>2018-11-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -101,14 +124,20 @@
   </url>
   
   <url>
-    <loc>/tags/rdcomclient/</loc>
-    <lastmod>2018-11-03T00:00:00+00:00</lastmod>
+    <loc>/tags/reading-data/</loc>
+    <lastmod>2018-10-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/tags/reading-data/</loc>
-    <lastmod>2018-10-28T00:00:00+00:00</lastmod>
+    <loc>/tags/sf/</loc>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/sf/</loc>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -132,7 +161,7 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2018-11-03T00:00:00+00:00</lastmod>
+    <lastmod>2020-03-14T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
